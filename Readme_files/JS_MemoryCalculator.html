@@ -1,0 +1,101 @@
+<html>
+	<head>
+		<style>
+			html {
+			background-color: white;
+			color: black;
+			font-family: sans-serif;
+			}
+			
+			table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+			}
+			
+			span.NoLineBreak {
+				white-space: nowrap;
+			}
+		</style>
+	</head>
+	<body onload="Calculate()">
+	
+	<kbd>!Freeram_MemoryFlag = </kbd>$<input type="text" onchange="Calculate()" value="7FC060" id="Freeram_MemoryFlag" list="MemoryFlagTables">
+	<button onclick="IncreaseDecreaseHexInput(1, 'Freeram_MemoryFlag', 0, parseInt('FFFFFF', 16)) ">+</button>
+	<button onclick="IncreaseDecreaseHexInput(-1, 'Freeram_MemoryFlag', 0, parseInt('FFFFFF', 16)) ">-</button>
+	<datalist id="MemoryFlagTables">
+	<option value="7FC060">Default RAM address</option>
+	</datalist><br>
+	Number of Bit Flags = <input type="number" onchange="Calculate()" value="1" id="NumberOfBitFlags"> (<kbd>$<span id="HexNumberOfFlags"></span></kbd>)<br><br>
+	
+	<span id="Output"></span>
+<script>
+	function Calculate() {
+		var FlagTable = clamp(parseInt(document.getElementById("Freeram_MemoryFlag").value, 16), 0, parseInt("FFFFFF", 16))
+		document.getElementById("Freeram_MemoryFlag").value = FlagTable.toString(16).toUpperCase()
+		var NumberOfBits = clamp(parseInt(document.getElementById("NumberOfBitFlags").value, 10), 1, 256)
+		document.getElementById("NumberOfBitFlags").value = NumberOfBits.toString(10)
+		document.getElementById("HexNumberOfFlags").innerHTML = NumberOfBits.toString(16).toUpperCase()
+		
+		var NumberOfBytes = Math.ceil(NumberOfBits/8)
+		
+		var Output = ""
+		document.getElementById("Output").innerHTML = ""
+		
+		Output += "<table>"
+		Output += "<tr>"
+		Output += "<td>Bit numbering:</td>"
+		Output += "<td><kbd>0</kbd> to <kbd>" + (NumberOfBits-1).toString(10) + "</kbd> (<kbd>$" + (NumberOfBits-1).toString(16).toUpperCase() + "</kbd>)</td>"
+		Output += "</tr>"
+		Output += "<tr>"
+		Output += "<td>Number of bytes:</td>"
+		Output += "<td><kbd>" + NumberOfBytes.toString(10) + "</kbd> (<kbd>$" + NumberOfBytes.toString(16).toUpperCase() + "</kbd>)</td>"
+		Output += "</tr>"
+		Output += "<tr>"
+		Output += "<td>RAM address range:</td>"
+		Output += "<td><kbd>$" + FlagTable.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (FlagTable+(NumberOfBytes-1)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag</kbd> to <kbd>!Freeram_MemoryFlag+$" + (NumberOfBytes-1).toString(16).toUpperCase() + "</kbd>)</td>"
+		Output += "</tr>"
+		Output += "</table><br><br>"
+		
+		Output += "<table>"
+		Output += "<tr><th>RAM address</th><th>Bit number</th><th>Bit in byte</th></tr>"
+		
+		var BitIndexCount = 0
+		var WhatBitInByte = [
+		"<kbd>%-------X</kbd> (bit <kbd>0</kbd>)",
+		"<kbd>%------X-</kbd> (bit <kbd>1</kbd>)",
+		"<kbd>%-----X--</kbd> (bit <kbd>2</kbd>)",
+		"<kbd>%----X---</kbd> (bit <kbd>3</kbd>)",
+		"<kbd>%---X----</kbd> (bit <kbd>4</kbd>)",
+		"<kbd>%--X-----</kbd> (bit <kbd>5</kbd>)",
+		"<kbd>%-X------</kbd> (bit <kbd>6</kbd>)",
+		"<kbd>%X-------</kbd> (bit <kbd>7</kbd>)",
+		]
+		for (BitIndexCount = 0; BitIndexCount < NumberOfBits; BitIndexCount++) {
+			Output += "<tr>"
+			if ((BitIndexCount % 8) == 0) {
+				Output += "<td rowspan='8'><kbd>$" + (FlagTable + Math.floor((BitIndexCount)/8)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + Math.floor((BitIndexCount)/8).toString(16).toUpperCase() + "</kbd>)</td>"
+			}
+			Output += "<td><kbd>" + BitIndexCount.toString(10) + "</kbd> (<kbd>$" + BitIndexCount.toString(16).toUpperCase() + "</kbd>)</td>"
+			Output += "<td>" + WhatBitInByte[BitIndexCount % 8] + "</td>"
+			Output += "</tr>"
+		}
+		Output += "</table>"
+		document.getElementById("Output").innerHTML = Output
+	}
+	function clamp(num, min, max) {
+		//Restrict a number within a specified range.
+		if (isNaN(num) == true) {
+			num = 0
+		}
+		return num <= min ? min : num >= max ? max : num;
+	}
+	function IncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
+		//To be used along with a hex input the user enters.
+		//This function is for the increment/decrement buttons since
+		//only the "number" input (only allows characters 0-9) allows
+		//the increment/decrement action (up/down button when selected,
+		//and pressing up and down)
+		document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy), Min, Max).toString(16).toUpperCase()
+		Calculate()
+	}
+</script>
