@@ -1,8 +1,8 @@
 ;Insert as [Level].
 
-!RAMC800BankLo = $7E
+!RAMC800Bank = $7E
 if !sa1 != 0
-	!RAMC800BankLo = $40
+	!RAMC800Bank = $40
 endif
 
 
@@ -25,7 +25,7 @@ load:
 	PLX					;>X = flag number.
 	LDA C800AddrByte0,x : STA $00		;\Place $C800 addresses into RAM $00
 	LDA C800AddrByte1,x : STA $01		;|
-	LDA C800AddrByte2,x : STA $02		;/
+	LDA.b #!RAMC800Bank : STA $02		;/
 	LDA TileLoByteWhenFlagSet,x
 	STA [$00]
 	INC $02					;>Go to high byte of $C800 table
@@ -37,7 +37,7 @@ load:
 	PLX					;>X = flag number.
 	LDA C800AddrByte0,x : STA $00		;\Place $C800 addresses into RAM $00
 	LDA C800AddrByte1,x : STA $01		;|
-	LDA C800AddrByte2,x : STA $02		;/
+	LDA.b #!RAMC800Bank,x : STA $02		;/
 	LDA TileLoByteWhenFlagClear,x
 	STA [$00]
 	INC $02					;>Go to high byte of $C800 table
@@ -172,23 +172,3 @@ load:
 	db ($C800+GetC800IndexHorizLvl($01B0, $1E, $16))>>8 ;>Flag $0D
 	db ($C800+GetC800IndexHorizLvl($01B0, $20, $16))>>8 ;>Flag $0E
 	db ($C800+GetC800IndexHorizLvl($01B0, $22, $16))>>8 ;>Flag $0F
-	
-	C800AddrByte2:
-	;This table contains the highest byte of the 24-bit (3-byte) address of the map16 table.
-	;($XX----, bank byte)
-	db ($C800+GetC800IndexHorizLvl($01B0, $04, $16))>>16 ;>Flag $00
-	db ($C800+GetC800IndexHorizLvl($01B0, $06, $16))>>16 ;>Flag $01
-	db ($C800+GetC800IndexHorizLvl($01B0, $08, $16))>>16 ;>Flag $02
-	db ($C800+GetC800IndexHorizLvl($01B0, $0A, $16))>>16 ;>Flag $03
-	db ($C800+GetC800IndexHorizLvl($01B0, $0C, $16))>>16 ;>Flag $04
-	db ($C800+GetC800IndexHorizLvl($01B0, $0E, $16))>>16 ;>Flag $05
-	db ($C800+GetC800IndexHorizLvl($01B0, $10, $16))>>16 ;>Flag $06
-	db ($C800+GetC800IndexHorizLvl($01B0, $12, $16))>>16 ;>Flag $07
-	db ($C800+GetC800IndexHorizLvl($01B0, $14, $16))>>16 ;>Flag $08
-	db ($C800+GetC800IndexHorizLvl($01B0, $16, $16))>>16 ;>Flag $09
-	db ($C800+GetC800IndexHorizLvl($01B0, $18, $16))>>16 ;>Flag $0A
-	db ($C800+GetC800IndexHorizLvl($01B0, $1A, $16))>>16 ;>Flag $0B
-	db ($C800+GetC800IndexHorizLvl($01B0, $1C, $16))>>16 ;>Flag $0C
-	db ($C800+GetC800IndexHorizLvl($01B0, $1E, $16))>>16 ;>Flag $0D
-	db ($C800+GetC800IndexHorizLvl($01B0, $20, $16))>>16 ;>Flag $0E
-	db ($C800+GetC800IndexHorizLvl($01B0, $22, $16))>>16 ;>Flag $0F
