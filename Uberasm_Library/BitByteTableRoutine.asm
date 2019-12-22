@@ -5,9 +5,10 @@
 ;item is 1 bit large instead of a byte.
 ;
 ;Input:
-; A (8-bit) = what bit number (a flag).
+; A (8-bit) = what bit number (a flag), 0-255 ($00-$FF)
 ;Output:
-; X (8-bit) = What byte in byte-array to check from.
+; -X (8-bit) = What byte in byte-array to check from.
+;  Up to X=31 ($1F) due to floor(255/8).
 ; Y (8-bit) = what bit number in each byte: 0-7.
 ;
 ;To set a bit:
