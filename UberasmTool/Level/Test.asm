@@ -4,7 +4,7 @@
 if !sa1 != 0
 	!RAMC800Bank = $40
 endif
-
+	incsrc "../FlagMemoryDefines/Defines.asm"
 
 	function GetC800IndexHorizLvl(RAM13D7, XPos, YPos) = (RAM13D7*(XPos/16))+(YPos*16)+(XPos%16)
 	function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YPos%16)*16)+(XPos%16)
@@ -14,35 +14,32 @@ load:
 	LDX #$0F
 	
 	..Loop
-	TXA
-	PHX
-	JSL BitByteTableRoutine_BitToByteIndex
-	LDA !Freeram_MemoryFlag,x
-	AND BitSelectTable,y			;>Clear all bits except the bit we select.
-	BEQ ...BitInTableClear			;\Conditions based on bit in table set or clear.
-	
-	...BitInTableSet
-	PLX					;>X = flag number.
 	LDA C800AddrByte0,x : STA $00		;\Place $C800 addresses into RAM $00
 	LDA C800AddrByte1,x : STA $01		;|
 	LDA.b #!RAMC800Bank : STA $02		;/
-	LDA TileLoByteWhenFlagSet,x
-	STA [$00]
+	TXA					;>Transfer bit number to A
+	PHX					;>Preserve X (after the following subroutine, X will what byte the bit is in).
+	JSL BitByteTableRoutine_BitToByteIndex	;>Get bit location
+	LDA !Freeram_MemoryFlag,x		;>Load the byte the selected bit is in.
+	AND BitSelectTable,y			;>Clear all bits except the bit we select.
+	BEQ ...BitInTableClear			;>Check if that selected bit is clear or set.
+	
+	...BitInTableSet
+	PLX					;>X = flag number.
+	LDA TileLoByteWhenFlagSet,x		;\Write low byte
+	STA [$00]				;/
 	INC $02					;>Go to high byte of $C800 table
-	LDA TileHiByteWhenFlagSet,x
-	STA [$00]
+	LDA TileHiByteWhenFlagSet,x		;\Write high byte
+	STA [$00]				;/
 	BRA ...Next
 	
 	...BitInTableClear
 	PLX					;>X = flag number.
-	LDA C800AddrByte0,x : STA $00		;\Place $C800 addresses into RAM $00
-	LDA C800AddrByte1,x : STA $01		;|
-	LDA.b #!RAMC800Bank,x : STA $02		;/
-	LDA TileLoByteWhenFlagClear,x
-	STA [$00]
+	LDA TileLoByteWhenFlagClear,x		;\Write low byte.
+	STA [$00]				;/
 	INC $02					;>Go to high byte of $C800 table
-	LDA TileHiByteWhenFlagClear,x
-	STA [$00]
+	LDA TileHiByteWhenFlagClear,x		;\Write high byte.
+	STA [$00]				;/
 	
 	...Next
 	DEX
@@ -97,22 +94,22 @@ load:
 	db $01 ;>Flag $0F
 	
 	TileLoByteWhenFlagSet:
-	db $25 ;>Flag $00
-	db $25 ;>Flag $01
-	db $25 ;>Flag $02
-	db $25 ;>Flag $03
-	db $25 ;>Flag $04
-	db $25 ;>Flag $05
-	db $25 ;>Flag $06
-	db $25 ;>Flag $07
-	db $25 ;>Flag $08
-	db $25 ;>Flag $09
-	db $25 ;>Flag $0A
-	db $25 ;>Flag $0B
-	db $25 ;>Flag $0C
-	db $25 ;>Flag $0D
-	db $25 ;>Flag $0E
-	db $25 ;>Flag $0F
+	db $2B ;>Flag $00
+	db $2B ;>Flag $01
+	db $2B ;>Flag $02
+	db $2B ;>Flag $03
+	db $2B ;>Flag $04
+	db $2B ;>Flag $05
+	db $2B ;>Flag $06
+	db $2B ;>Flag $07
+	db $2B ;>Flag $08
+	db $2B ;>Flag $09
+	db $2B ;>Flag $0A
+	db $2B ;>Flag $0B
+	db $2B ;>Flag $0C
+	db $2B ;>Flag $0D
+	db $2B ;>Flag $0E
+	db $2B ;>Flag $0F
 	TileHiByteWhenFlagSet:
 	db $00 ;>Flag $00
 	db $00 ;>Flag $01
