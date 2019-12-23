@@ -127,10 +127,11 @@ WriteArrayC800:
 	
 	...NextBlockInTable
 	LDA !Scratchram_WriteArrayC800+06		;\Decrease number of blocks left
-	DEC						;|
-	STA !Scratchram_WriteArrayC800+06		;/
+	SEC						;|
+	SBC #$01					;|>Used SEB : SBC instead of BPL/BMI
+	STA !Scratchram_WriteArrayC800+06		;/so you can use up to 255 indexes (256-array)
 	;BPL .Loop					;>Loop till all blocks in table are all copied.
-	BMI +
+	BCC +
 	JMP .Loop
 	+
 	RTL
