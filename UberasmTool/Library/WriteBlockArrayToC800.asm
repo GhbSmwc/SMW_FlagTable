@@ -100,9 +100,11 @@ WriteArrayC800:
 	..Next
 	INY
 	LDA !Scratchram_WriteArrayC800+12		;\Decrement number of blocks in the current line to process
-	DEC						;|
+	SEC						;|
+	SBC #$01					;|
 	STA !Scratchram_WriteArrayC800+12		;/
-	BPL ...HorizontalLineIncomplete			;>Once 0 -> $FF, newline, otherwise continue on the line.
+	;BPL ...HorizontalLineIncomplete		;>Once 0 -> $FF, newline, otherwise continue on the line.
+	BCS ...HorizontalLineIncomplete
 	
 	...HorizontalLineComplete
 	;Next line, go back to the left and down a line
