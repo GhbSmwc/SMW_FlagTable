@@ -24,13 +24,13 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	PHX		;>This is needed if you are going to have sprites interacting with this block.
 	REP #$30
-	LDX.w #(GetFlagNumberC800IndexEnd-GetFlagNumberC800IndexStart)-2 ;>Obtain the last index.
+	LDX.w #(?GetFlagNumberC800IndexEnd-?GetFlagNumberC800IndexStart)-2 ;>Obtain the last index.
 	-
 	LDA $010B|!addr
-	CMP.l GetFlagNumberLevelIndexStart,x			;\If level number not match, next
+	CMP.l ?GetFlagNumberLevelIndexStart,x			;\If level number not match, next
 	BNE ++							;/
 	LDA $00							;\If C800 index number not match, next
-	CMP.l GetFlagNumberC800IndexStart,x			;/
+	CMP.l ?GetFlagNumberC800IndexStart,x			;/
 	BNE ++
 	BRA +							;>Match found.
 	++
@@ -57,12 +57,12 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	;are associated to.
 	
 	
-	GetFlagNumberLevelIndexStart:
+	?GetFlagNumberLevelIndexStart:
 	;List of level numbers. This is essentially what level the flags are in.
 	dw $0105						;>Flag 0 (X=$0000)
 	dw $0105						;>Flag 1 (X=$0002)
-	GetFlagNumberLevelIndexEnd:
-	GetFlagNumberC800IndexStart:
+	?GetFlagNumberLevelIndexEnd:
+	?GetFlagNumberC800IndexStart:
 	;List of positions.
 	;With the help of asar's function (not sure if Xkas first made this or not),
 	;adding a location to the table is very easy. Format:
@@ -79,4 +79,4 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	;-$XXXX and $YYYY are the block coordinates, in units of 16x16 blocks (not pixels).
 	dw GetC800IndexHorizLvl($01B0, $000F, $0014)		;>Flag 0 (X=$0000)
 	dw GetC800IndexHorizLvl($01B0, $001F, $0014)		;>Flag 1 (X=$0002)
-	GetFlagNumberC800IndexEnd:
+	?GetFlagNumberC800IndexEnd:
