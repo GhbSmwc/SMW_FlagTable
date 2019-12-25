@@ -35,19 +35,48 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	BRA +							;>Match found.
 	++
 	DEX #2							;>Next item.
-	BPL -							;>Loop till X=$FFFE (no match found)
+	BPL -							;>Loop till X=$FFFE (no match found), thankfully, 255*2 = 510 ($01FE) is less than 32768 ($8000).
 	+
-	TXA
+	TXA							;>Transfer indexCount*2 to A
 	SEP #$30
-	PLX
+	PLX							;>Restore potential sprite index.
 	RTL
+	;Note: The order in these tables relates to the flag numbering, as you
+	;go down the list, the flag number increases (starting from 0). Make sure
+	;that all entries are in between "Start" and "End" so that the routine
+	;above catches all the items in the list and not miss them.
+	
+	;I would recommend using Notepad++ and use [Edit -> Column editor -> Number to Insert]
+	;and:
+	;Initial number: 0
+	;Increase by: 1 or 2
+	;Leading zeroes: checked
+	;Format: Dec or hex
+	;so you can instantly add a comment (see example to the right of the dw table)
+	;and conveniently numbered for easy of what flag number each item in their tables
+	;are associated to.
+	
+	
+	GetFlagNumberLevelIndexStart:
+	;List of level numbers. This is essentially what level the flags are in.
+	dw $0105						;>Flag 0 (X=$0000)
+	dw $0105						;>Flag 1 (X=$0002)
+	GetFlagNumberLevelIndexEnd:
 	GetFlagNumberC800IndexStart:
-	;List of positions
+	;List of positions.
+	;With the help of asar's function (not sure if Xkas first made this or not),
+	;adding a location to the table is very easy. Format:
+	;
+	;dw GetC800IndexHorizLvl($HHHH, $XXXX, $YYYY)
+	;dw GetC800IndexVertiLvl($XXXX, $YYYY)
+	;
+	;-$HHHH is the level height (in pixels), basically RAM address $13D7. Fast way to
+	; know what value is this in a level is in lunar magic,
+	; "Change Properties in header" (Mario head), and on "Horizontal Level Mode",
+	; you'll see [Level Height=<HHH> tiles, Max H-Screens=<WW>]
+	; Take the value in <HHH>, add a zero at the end (example: $01B -> $01B0) and
+	; that will be your $HHHH value.
+	;-$XXXX and $YYYY are the block coordinates, in units of 16x16 blocks (not pixels).
 	dw GetC800IndexHorizLvl($01B0, $000F, $0014)		;>Flag 0 (X=$0000)
 	dw GetC800IndexHorizLvl($01B0, $001F, $0014)		;>Flag 1 (X=$0002)
 	GetFlagNumberC800IndexEnd:
-	GetFlagNumberLevelIndexStart:
-	;List of level numbers:
-	dw $0105
-	dw $0105
-	GetFlagNumberLevelIndexEnd:
