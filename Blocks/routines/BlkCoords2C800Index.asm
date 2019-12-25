@@ -2,13 +2,11 @@
 ;;Obtain level map16 ($7EC800/$7FC800) indexing via block
 ;;coordinates.
 ;;
-;;This has been edited to automatically read from $9A-$9B and $98-$99.
-;;
 ;;Input:
-;; -$00 to $01 (now $9A-$9B): X position, in units of full blocks
+;; -$00 to $01: X position, in units of full blocks
 ;;  (increments by one means a full 16x16 block, unlike $9A-$9B,
 ;;  which are pixels).
-;; -$02 to $03 (now $98-$99): Same as above but for Y position
+;; -$02 to $03: Same as above but for Y position
 ;;Output:
 ;; -$00-$01: The index of the blocks.
 ;; -Carry: Set if coordinate points to outside of level.
@@ -56,15 +54,6 @@
 ; unit handling is easier than horizontal levels. The bit format of the index is %YYYYYXyyyyxxxx
 
 ;GetLevelMap16IndexByMap16Position:
-	
-	REP #$20
-	LDA $9A				;\BlockXPos = floor(PixelXPos/16)
-	LSR #4				;|
-	STA $00				;/
-	LDA $98				;\BlockYPos = floor(PixelYPos/16)
-	LSR #4				;|
-	STA $02				;/
-	SEP #$20
 	;Check level format
 	LDA $5B
 	LSR

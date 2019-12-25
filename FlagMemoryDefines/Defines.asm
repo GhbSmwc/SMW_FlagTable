@@ -50,12 +50,12 @@ endif
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;display RAM on asar console window.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-print "Low byte location:      $", hex(!Scratchram_WriteArrayC800+00), " to $", hex(!Scratchram_WriteArrayC800+02)
-print "High byte location:     $", hex(!Scratchram_WriteArrayC800+03), " to $", hex(!Scratchram_WriteArrayC800+05)
-print "Number of blocks:       $", hex(!Scratchram_WriteArrayC800+06)
-print "Block width:            $", hex(!Scratchram_WriteArrayC800+07)
-print "X Position to place:    $", hex(!Scratchram_WriteArrayC800+08), " to $", hex(!Scratchram_WriteArrayC800+09)
-print "Y Position to place:    $", hex(!Scratchram_WriteArrayC800+10), " to $", hex(!Scratchram_WriteArrayC800+11)
-print "Overwritten:-------------------------------------"
-print "X line of blocks left:  $", hex(!Scratchram_WriteArrayC800+12)
-print "X position during loop: $", hex(!Scratchram_WriteArrayC800+13), " to $", hex(!Scratchram_WriteArrayC800+14)
+;print "Low byte location:      $", hex(!Scratchram_WriteArrayC800+00), " to $", hex(!Scratchram_WriteArrayC800+02)
+;print "High byte location:     $", hex(!Scratchram_WriteArrayC800+03), " to $", hex(!Scratchram_WriteArrayC800+05)
+;print "Number of blocks:       $", hex(!Scratchram_WriteArrayC800+06)
+;print "Block width:            $", hex(!Scratchram_WriteArrayC800+07)
+;print "X Position to place:    $", hex(!Scratchram_WriteArrayC800+08), " to $", hex(!Scratchram_WriteArrayC800+09)
+;print "Y Position to place:    $", hex(!Scratchram_WriteArrayC800+10), " to $", hex(!Scratchram_WriteArrayC800+11)
+;print "Overwritten:-------------------------------------"
+;print "X line of blocks left:  $", hex(!Scratchram_WriteArrayC800+12)
+;print "X position during loop: $", hex(!Scratchram_WriteArrayC800+13), " to $", hex(!Scratchram_WriteArrayC800+14)

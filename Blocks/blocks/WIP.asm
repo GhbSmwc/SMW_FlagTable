@@ -14,19 +14,29 @@ HeadInside:
 
 ;WallFeet:	; when using db $37
 ;WallBody:
-	PHY
-	%BlkCoords2C800Index()
-	%SearchFlagIndex()
-	PLY
+	PHY				;>Prevent overwriting the block behavior high byte stored in Y.
 	REP #$20
-	CMP #$FFFE
+	LDA $9A				;\BlockXPos = floor(PixelXPos/16)
+	LSR #4				;|
+	STA $00				;/
+	LDA $98				;\BlockYPos = floor(PixelYPos/16)
+	LSR #4				;|
+	STA $02				;/
 	SEP #$20
-	BEQ SpriteV
-	LDA #$80
-	STA $7D
+	%BlkCoords2C800Index()
+	%SearchBlockFlagIndex()
+	REP #$20			;\If flag number associated with this block location not found, return.
+	CMP #$FFFE			;|
+	BEQ Done			;/
+	LSR				;>Convert to index number from Index*2.
+	SEP #$20
+	%SetBlockFlagIndex()
+	Done:
+	SEP #$30			;>Just in case.
+	PLY				;>Restore block behavior
+	RTL
 SpriteV:
 SpriteH:
-
 MarioCape:
 MarioFireball:
 RTL
