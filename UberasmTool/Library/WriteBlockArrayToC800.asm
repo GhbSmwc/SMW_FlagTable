@@ -16,7 +16,6 @@
 ;-GetMap16PositionByLevelMap16Index
 ;-MathMul16_16
 ;-MathDiv
-;-BitToByteIndex
 ;
 ;
 ;
