@@ -3,12 +3,13 @@
 	function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YPos%16)*16)+(XPos%16)
 ;Make sure you have [math round on] to prevent unexpected rounded numbers.
 
-;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Routines list:
 ;
 ;Routines specific to this ASM code:
 ;-WriteFlaggedBlocksC800
-;Other routines
+;
+;Other routines:
 ;-Write2DArrayC800
 ;-WriteHorizLineArrayC800
 ;-WriteVertiLineArrayC800
@@ -16,10 +17,10 @@
 ;-GetMap16PositionByLevelMap16Index
 ;-MathMul16_16
 ;-MathDiv
+;-BitToByteIndex
 ;
 ;
-;
-;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Handle what blocks in level should spawn based on the flags stored in !Freeram_MemoryFlag.
 ;
