@@ -1,4 +1,103 @@
 	incsrc "../FlagMemoryDefines/Defines.asm"
+	function GetC800IndexHorizLvl(RAM13D7, XPos, YPos) = (RAM13D7*(XPos/16))+(YPos*16)+(XPos%16)
+	function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YPos%16)*16)+(XPos%16)
+;Make sure you have [math round on] to prevent unexpected rounded numbers.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Handle what blocks in level should spawn based on the flags stored in !Freeram_MemoryFlag.
+;
+;To be executed as a subroutine from level load.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+WriteFlaggedBlocksC800:
+	REP #$30			;>16-bit AXY
+	LDX.w #(.LeveListEnd-.LeveListStart)-2		;>X = Index*2
+	LDY.w #((.LeveListEnd-.LeveListStart)/2)-1	;>Y = Index
+	
+	.Loop
+	..Process
+	...CheckCurrentLevelNumber
+	LDA.l .LeveListStart,x			;>Level number from list
+	CMP $13D7|!addr				;>Compare with current level number
+	BNE ..Next
+	
+	...GetBlockLocation
+	LDA.l .BlockIndexListStart,x		;\Insert the index number for the routine
+	STA $00					;/
+	STA !Scratchram_TempBlockIndex		;>In the event you need to write just one block, use this as index.
+	PHX					;>Preserve 16-bit X
+	PHY					;>Preserve 16-bit Y
+	SEP #$30				;>8-bit AXY
+	JSL GetMap16PositionByLevelMap16Index	;>Convert index to a total-of-4-bytes coordinates. Output: (RAM_00, RAM_02)
+	REP #$10				;>16-bit XY
+	PLY					;>Restore 16-bit Y
+	PLX					;>Restore 16-bit X
+	
+	....HandleBlockArray
+	PHX					;>Preserve 16-bit X
+	PHY					;>Preserve 16-bit Y
+	TYX					;>Had use X as a Index and not Index*2 due to LDA $xxxxxx,y doesn't exist (and so is LDX $xxxxxx,x).
+	LDA #$00				;\Clear A's high byte
+	XBA					;/
+	LDA.l .BlockArrayTypeIDList,x		;>A = ArrayID ($00XX)
+	REP #$20
+	ASL					;\Get ArrayID*2 for X
+	TAX					;/
+	JSR (BlockArrayRoutineTable,x)
+	PLY					;>Restore Y
+	PLX					;>Restore X
+	
+	..Next
+	DEY
+	DEX #2					;>DEX comes after DEY to allow flags beyond $7F.
+	BPL .Loop				;>Check if 16-bit X = $FFFE, then break loop.
+	
+	.Done
+	SEP #$30
+	RTL
+	
+	.LeveListStart
+	dw $0105						;>Flag 0 (X=$0000)
+	dw $0105						;>Flag 1 (X=$0002)
+	.LeveListEnd
+	
+	.BlockIndexListStart
+	dw GetC800IndexHorizLvl($01B0, $000F, $0014)		;>Flag 0 (X=$0000)
+	dw GetC800IndexHorizLvl($01B0, $001F, $0014)		;>Flag 1 (X=$0002)
+	
+	.BlockArrayTypeIDList
+	;This table contains what array ID of blocks to write into the level.
+	;Default what each of these IDs do:
+	;$00 = 1x1 block that is a cement block when the flag is 0 and coin when 1.
+	;$01
+	db $00							;>Flag 0 (Y=$0000)
+	db $00							;>Flag 1 (Y=$0001)
+	
+	.BlockArrayRoutineTable
+	dw Dimension1x1Block0130x002B				;>Flag 0 (X=$0002)
+	
+	;Don't touch this.
+	BitSelectTable:	;Applies to all example codes presented here.
+	db %00000001 ;>Bit 0
+	db %00000010 ;>Bit 1
+	db %00000100 ;>Bit 2
+	db %00001000 ;>Bit 3
+	db %00010000 ;>Bit 4
+	db %00100000 ;>Bit 5
+	db %01000000 ;>Bit 6
+	db %10000000 ;>Bit 7
+	
+	;Here are the routines, Y = the flag index. X is safe to use.
+	;Some RAM to use:
+	;-$00-$01 contains the block X position
+	;-$02-$03 contains the block Y position
+	; ^Those positions to be used with block-array writer routines
+	;  (Write2DArrayC800, WriteHorizLineArrayC800, and WriteVertiLineArrayC800)
+	;-!Scratchram_TempBlockIndex contains the $C800 index
+	;Make sure the routines here end with an RTS and not RTL due to
+	;JSL ($xxxxxx,x) do not exist.
+	Dimension1x1Block0130x002B:
+	TYA
+	JSL 
+	RTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Write a 2D array of blocks into $C800 (does not work with layer 2 blocks if layer 2 level).
 ;
@@ -476,6 +575,127 @@ GetLevelMap16IndexByMap16Position:
 	.Invalid1
 	SEP #$21
 	RTL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Obtain block coordinate from $7EC800/$7FC800 indexing.
+;;
+;;Input:
+;; -$00 to $01: The index of $7EC800/$7FC800. Index above $37FF is
+;;  invalid.
+;;Output:
+;; -$00 to $01: X position (in units of blocks, each increment
+;;  means a full block).
+;; -$02 to $03: Y position, same as above but vertical position.
+;; -Carry: Set if index is invalid or would be at a location
+;;  outside the level boundary.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Computation as follows:
+;Horizontal level:
+; XPos = (floor(BlockIndex/BlocksPerScreenCol)*16) + (Index MOD 16)
+; YPos = floor((BlockIndex MOD BlocksPerScreenCol)/16)
+;
+; BlocksPerScreenCol is basically RAM $13D7, it not only holds the
+; height of the level in pixels, it also holds the number of
+; blocks per screen column.
+;Vertical level:
+; XPos = (floor((BlockIndex MOD 512)/256)*16) + (BlockIndex MOD 16)
+; YPos = (floor(BlockIndex/512)*16) + (floor(BlockIndex/16) MOD 16)
+;
+; In boolean bitwise operation, you simply rearrange the group
+; of bits due to the width and height as well as the number of
+; blocks per screen are powers of 2.
+GetMap16PositionByLevelMap16Index:
+	REP #$20
+	LDA $00
+	CMP #$3800
+	BCS .Invalid
+	SEP #$20
+	LDA $5B
+	LSR
+	REP #$20
+	BCS .VerticalLevel
+
+	.HorizontalLevel
+	if !sa1 == 0
+		LDA $13D7|!addr			;\Index divide by number of blocks per screen column
+		STA $02				;|
+		JSL MathDiv			;/Q ($00-$01) = %00000000000XXXXX, R ($02-$03) = %00yyyyyyyyyyxxxx
+		REP #$20			;
+		LDA $00				;\$00-$01: %00000000000XXXXX -> %0000000XXXXX0000 (part of converting to X position by convert to block units)
+		ASL #4				;|
+		STA $00				;/
+		LDA $02				;>$02-$03: %00yyyyyyyyyyxxxx
+		AND.w #%0000000000001111	;>A: %000000000000xxxx
+		ORA $00				;>OR with %0000000XXXXX0000
+		STA $00				;>$00-$01:%0000000XXXXXxxxx ((ScreenColumnPassed*16) + XPosWithinCol)
+		LDA $02				;\$02-$03: %00yyyyyyyyyyxxxx -> %000000yyyyyyyyyy (divide Y by 16)
+		LSR #4				;|
+		STA $02				;/
+	else
+		SEP #$20
+		LDA #$01			;\Divide mode
+		STA $2250			;/
+		REP #$20
+		LDA $00				;\Index divide by number of blocks per screen column
+		STA $2251			;|
+		LDA $13D7|!addr			;|
+		STA $2253			;/Q ($2306-$2307) = %00000000000XXXXX, R ($2308-$2309) = %00yyyyyyyyyyxxxx
+		NOP				;\Wait 5 cycles.
+		BRA $00				;/
+		LDA $2308			;\$2308-$2309 is a portion of the screen column (%00yyyyyyyyyyxxxx)
+		LSR #4				;|>Divide by 16 (%00yyyyyyyyyyxxxx -> %000000yyyyyyyyyy)
+		STA $02				;/
+		LDA $2308			;\%00yyyyyyyyyyxxxx -> %000000000000xxxx
+		AND.w #%0000000000001111	;|
+		STA $00				;/
+		LDA $2306			;>$2306-$2307 (quotient) = %00000000000XXXXX
+		ASL #4				;>A: %00000000000XXXXX -> %0000000XXXXX0000 ((ScreenColumnPassed*16)...)
+		ORA $00				;>A: (... + BlockXPosWithinColumn)
+		STA $00				;>(ScreenColumnPassed*16) + BlockXPosWithinColumn (%0000000XXXXX0000 + %00000000000XXXXX)
+	endif
+	LDA $00					;\Screen column the block coordinate is on
+	LSR #4					;/
+	SEP #$20
+	CMP $5E					;>If past the last screen, mark as invalid.
+	BCS .Invalid
+	
+	.Valid
+	CLC				;>Mark that this is a valid coordinate.
+	RTL
+	
+	.Invalid
+	SEP #$21
+	RTL
+;Rearrange this:
+; $00-$01: %00YYYYYX yyyyxxxx
+;to:
+; $00-$01: %00000000 000Xxxxx
+; $02-$03: %0000000Y YYYYyyyy
+	.VerticalLevel
+	LDA $00					;>$00-$01: %00YYYYYX yyyyxxxx
+	AND.w #%0000000011110000		;>A:       %00000000 yyyy0000
+	LSR #4					;>A:       %00000000 0000yyyy
+	STA $02					;>$02-$03: %00000000 0000yyyy
+	LDA $00					;>$00-$01: %00YYYYYX yyyyxxxx
+	AND.w #%0011111000000000		;>A:       %00YYYYY0 00000000
+	LSR #5					;>A:       %0000000Y YYYY0000
+	ORA $02					;>A:       %0000000Y YYYYyyyy
+	STA $02					;>$02-$03: %0000000Y YYYYyyyy ;>Y pos done.
+	LDA $00					;>$00-$01: %00YYYYYX yyyyxxxx ;\Make room to place the high bit X position
+	AND.w #%0000000100001111		;>A:       %0000000X 0000xxxx ;|next to the low 4 bits of X position.
+	STA $00					;>$00-$01: %0000000X 0000xxxx ;/
+	AND.w #%0000000100000000		;>A:       %0000000X 00000000
+	LSR #4					;>A:       %00000000 000X0000
+	ORA $00					;>A:       %0000000X 000Xxxxx ;>Note the duplicated X position high bit
+	AND.w #%0000000000011111		;>A:       %0000000X 000Xxxxx ;>fix the high bit problem.
+	STA $00					;>$00-$01: %00000000 000Xxxxx ;>X pos done.
+	
+	LDA $02
+	LSR #4
+	SEP #$20
+	CMP $5F
+	BCS .Invalid
+	RTL
+if !sa1 == 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 16bit * 16bit unsigned Multiplication
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -513,3 +733,83 @@ MathMul16_16:	REP #$20
 		STA $06
 		SEP #$20
 		RTL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; unsigned 16bit / 16bit Division
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Arguments
+; $00-$01 : Dividend
+; $02-$03 : Divisor
+; Return values
+; $00-$01 : Quotient
+; $02-$03 : Remainder
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+MathDiv:	REP #$20
+		ASL $00
+		LDY #$0F
+		LDA.w #$0000
+-		ROL A
+		CMP $02
+		BCC +
+		SBC $02
++		ROL $00
+		DEY
+		BPL -
+		STA $02
+		SEP #$20
+		RTL
+endif
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Bit search. This is basically euclidean division
+;by 8 to determine what bit and byte to read and
+;write. Very useful if you have a table where each
+;item is 1 bit large instead of a byte.
+;
+;Input:
+; -A (8-bit) = what bit number (a flag), 0-255 ($00-$FF)
+;Output:
+; -X (8-bit) = What byte in byte-array to check from.
+;  Up to X=31 ($1F) due to floor(255/8).
+; -Y (8-bit) = what bit number in each byte: 0-7.
+;
+;To set a bit:
+; LDA <Bitnumber>
+; JSL BitToByteIndex
+; LDA BitSelectTable,y
+; ORA !RAMTable,x
+; STA !RAMTable,x
+; [...]
+; BitSelectTable:	;Applies to all example codes presented here.
+;  db %00000001 ;>Bit 0
+;  db %00000010 ;>Bit 1
+;  db %00000100 ;>Bit 2
+;  db %00001000 ;>Bit 3
+;  db %00010000 ;>Bit 4
+;  db %00100000 ;>Bit 5
+;  db %01000000 ;>Bit 6
+;  db %10000000 ;>Bit 7
+;
+;To clear a bit:
+; LDA <Bitnumber>
+; JSL BitToByteIndex
+; LDA BitSelectTable,y
+; EOR.b #%11111111
+; AND !RAMTable,x
+; STA !RAMTable,x
+;
+;To read/check a bit:
+; LDA <Bitnumber>
+; JSL BitToByteIndex
+; LDA !RAMTable,x
+; AND BitSelectTable,y			;>Clear all bits except the bit we select.
+; BEQ BitInTableClear			;\Conditions based on bit in table set or clear.
+; BNE BitInTableSet			;/
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+BitToByteIndex:
+	PHA			;>A as input preserved.
+	AND.b #%00000111	;>WhatBit = Bitnumber MOD 8
+	TAY			;>Place in Y.
+	PLA			;>Restore what was originally in the input.
+	LSR #3			;>ByteNumber = floor(Bitnumber/8)
+	TAX			;>Place in X.
+	RTL

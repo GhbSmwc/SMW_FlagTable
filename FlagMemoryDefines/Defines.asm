@@ -45,8 +45,15 @@ endif
  ;^[15 bytes] To be used in a routine [WriteBlockArrayToC800_WriteArrayC800]
  ; due to a subroutine used within a subroutine have a conflicting scratch RAM
  ; and was necessary to keep track of the positioning of the tile during a loop.
-
-
+ 
+ if !sa1 == 0
+  !Scratchram_TempBlockIndex = $8A
+ else
+  !Scratchram_TempBlockIndex = $8A
+ endif
+ ;^[2 bytes]
+ ;
+ ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;display RAM on asar console window.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
