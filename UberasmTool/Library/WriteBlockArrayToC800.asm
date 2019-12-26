@@ -36,23 +36,23 @@ WriteFlaggedBlocksC800:
 	
 	.Loop
 	..Process
-	...GetFlag
-	TYA
-	PHX
-	PHY
-	SEP #$20
-	JSL BitToByteIndex
-	LDA !Freeram_MemoryFlag,x
-	AND BitSelectTable,y			;>Clear all bits except the bit we select.
-	STA !Scratchram_TempBlockSettings+02
-	
-	REP #$20
-	PLY
-	PLX
 	...CheckCurrentLevelNumber
 	LDA.l .LeveListStart,x			;>Level number from list
 	CMP $010B|!addr				;>Compare with current level number
 	BNE ..Next
+	
+	...GetFlag
+	TYA					;>Transfer flag number to A
+	PHX					;>Preserve 16-bit X
+	PHY					;>Preserve 16-bit Y
+	SEP #$20				;>8-bit A
+	JSL BitToByteIndex			;>Get byte address location and what bit.
+	LDA !Freeram_MemoryFlag,x
+	AND BitSelectTable,y			;>Clear all bits except the bit we select.
+	STA !Scratchram_TempBlockSettings+02	;>Store desired bit into scratch RAM
+	REP #$20				;>16-bit A
+	PLY					;>Restore 16-bit Y
+	PLX					;>Restore 16-bit X
 	
 	...GetBlockLocation
 	LDA.l .BlockIndexListStart,x		;\Insert the index number for the routine
