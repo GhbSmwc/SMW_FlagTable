@@ -47,13 +47,14 @@ endif
  ; and was necessary to keep track of the positioning of the tile during a loop.
  
  if !sa1 == 0
-  !Scratchram_TempBlockIndex = $8A
+  !Scratchram_TempBlockSettings = $8A
  else
-  !Scratchram_TempBlockIndex = $8A
+  !Scratchram_TempBlockSettings = $8A
  endif
- ;^[2 bytes]
- ;
- ;
+ ;^[3 bytes] temporary storage during "WroteBlockArrayToC800"
+ ; when processing a code that writes to stage.
+ ; +$00 to +$01: $C800 index
+ ; +$02:         #$00 if the flag table is clear and any nonzero value when set.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;display RAM on asar console window.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -2,27 +2,62 @@
 	function GetC800IndexHorizLvl(RAM13D7, XPos, YPos) = (RAM13D7*(XPos/16))+(YPos*16)+(XPos%16)
 	function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YPos%16)*16)+(XPos%16)
 ;Make sure you have [math round on] to prevent unexpected rounded numbers.
+
+;;;;;;;;;;;;;;;;;
+;Routines list:
+;
+;Routines specific to this ASM code:
+;-WriteFlaggedBlocksC800
+;Other routines
+;-Write2DArrayC800
+;-WriteHorizLineArrayC800
+;-WriteVertiLineArrayC800
+;-GetLevelMap16IndexByMap16Position
+;-GetMap16PositionByLevelMap16Index
+;-MathMul16_16
+;-MathDiv
+;-BitToByteIndex
+;
+;
+;
+;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Handle what blocks in level should spawn based on the flags stored in !Freeram_MemoryFlag.
 ;
 ;To be executed as a subroutine from level load.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 WriteFlaggedBlocksC800:
-	REP #$30			;>16-bit AXY
+	PHB						;\Switch to current bank
+	PHK						;|
+	PLB						;/
+	REP #$30					;>16-bit AXY
 	LDX.w #(.LeveListEnd-.LeveListStart)-2		;>X = Index*2
 	LDY.w #((.LeveListEnd-.LeveListStart)/2)-1	;>Y = Index
 	
 	.Loop
 	..Process
+	...GetFlag
+	TYA
+	PHX
+	PHY
+	SEP #$20
+	JSL BitToByteIndex
+	LDA !Freeram_MemoryFlag,x
+	AND BitSelectTable,y			;>Clear all bits except the bit we select.
+	STA !Scratchram_TempBlockSettings+02
+	
+	REP #$20
+	PLY
+	PLX
 	...CheckCurrentLevelNumber
 	LDA.l .LeveListStart,x			;>Level number from list
-	CMP $13D7|!addr				;>Compare with current level number
+	CMP $010B|!addr				;>Compare with current level number
 	BNE ..Next
 	
 	...GetBlockLocation
 	LDA.l .BlockIndexListStart,x		;\Insert the index number for the routine
 	STA $00					;/
-	STA !Scratchram_TempBlockIndex		;>In the event you need to write just one block, use this as index.
+	STA !Scratchram_TempBlockSettings	;>In the event you need to write just one block, use this as index.
 	PHX					;>Preserve 16-bit X
 	PHY					;>Preserve 16-bit Y
 	SEP #$30				;>8-bit AXY
@@ -41,7 +76,9 @@ WriteFlaggedBlocksC800:
 	REP #$20
 	ASL					;\Get ArrayID*2 for X
 	TAX					;/
-	JSR (BlockArrayRoutineTable,x)
+	SEP #$20
+	JSR (.BlockArrayRoutineTable,x)
+	REP #$30
 	PLY					;>Restore Y
 	PLX					;>Restore X
 	
@@ -52,6 +89,7 @@ WriteFlaggedBlocksC800:
 	
 	.Done
 	SEP #$30
+	PLB					;>Restore bank.
 	RTL
 	
 	.LeveListStart
@@ -91,12 +129,48 @@ WriteFlaggedBlocksC800:
 	;-$02-$03 contains the block Y position
 	; ^Those positions to be used with block-array writer routines
 	;  (Write2DArrayC800, WriteHorizLineArrayC800, and WriteVertiLineArrayC800)
-	;-!Scratchram_TempBlockIndex contains the $C800 index
+	;-!Scratchram_TempBlockSettings+$00 to +$01 contains the $C800 index
+	;-!Scratchram_TempBlockSettings+$02 contains $00 if flag clear and nonzero when set.
 	;Make sure the routines here end with an RTS and not RTL due to
 	;JSL ($xxxxxx,x) do not exist.
 	Dimension1x1Block0130x002B:
-	TYA
-	JSL 
+	REP #$30				;>16-bit AXY
+	LDA !Scratchram_TempBlockSettings
+	TAX
+	SEP #$20				;>8-bit A
+	LDA !Scratchram_TempBlockSettings+$02	;\Clear or set?
+	BEQ .Clear				;/
+	
+	.Set
+	LDA.b #$0130
+	if !sa1 == 0
+		STA $7EC800,x
+	else
+		STA $40C800,x
+	endif
+	LDA.b #$0130>>8
+	if !sa1 == 0
+		STA $7FC800,x
+	else
+		STA $41C800,x
+	endif
+	BRA .Done
+	
+	.Clear
+	LDA.b #$0300
+	if !sa1 == 0
+		STA $7EC800,x
+	else
+		STA $40C800,x
+	endif
+	LDA.b #$0300>>8
+	if !sa1 == 0
+		STA $7FC800,x
+	else
+		STA $41C800,x
+	endif
+	.Done
+	SEP #$30
 	RTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Write a 2D array of blocks into $C800 (does not work with layer 2 blocks if layer 2 level).
