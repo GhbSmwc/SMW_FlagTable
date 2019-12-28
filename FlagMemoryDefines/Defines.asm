@@ -24,18 +24,33 @@ endif
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Freeram
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Note: $ indicates hex, this include the !Defines being set to a value
+;and the formula explaining how much bytes they use.
+;
  if !sa1 == 0
   !Freeram_MemoryFlag = $7FAD49
  else
   !Freeram_MemoryFlag = $4001B9
  endif
- ;^[(Ceiling(NumberOfFlags/8)) bytes] a table containing an array of
- ; flags. The more flags you have in your hack, the more bytes are taken:
- ; 1-8 flags: 1 byte
- ; 9-16 flags: 2 bytes
- ; 17-24 flags: 3 bytes
- ; 25-32 flags: 4 bytes
- ; and so on.
+ ;^[BytesUsed = NumberOfGroups*$10] a table containing an array of
+ ; "global memory" flags. NumberOfGroups is how many groups of 128 flags
+ ; you want in your hack, up to 16. For example:
+ ;
+ ; One level uses all 128 bits on !Freeram_MemoryFlag to !Freeram_MemoryFlag+$0F
+ ; Another level also uses 128 bits !Freeram_MemoryFlag+$10 to !Freeram_MemoryFlag+$1F
+ ;
+ ; This means 2 groups of 128-bits would result the formula [32 bytes = 2 * $10].
+ ; You can also make multiple levels use the same group-128 if any of the level
+ ; sharing this uses less than 128 flags to save memory and not have "gaps".
+ ;
+ ; I would highly recommend make a note in a txt file listing the RAM flag areas
+ ; so you can keep track of the flags and where they are, made-up example:
+ ;
+ ; !Freeram_MemoryFlag+$00 to !Freeram_MemoryFlag+$0F: used in level $105, $106 ($105: 0-63, $106: 64-127)
+ ; !Freeram_MemoryFlag+$10 to !Freeram_MemoryFlag+$1F: used in level $107, $102, $103 ($107: 0-49, $102: 50-100, $103: 101-127)
+ ;
+ ; It would be foolish to use this ASM resource if your entire hack
+ ; uses 128 or less flags since you can use $7FC060 alone.
 
  if !sa1 == 0
   !Scratchram_WriteArrayC800 = $7F844A
