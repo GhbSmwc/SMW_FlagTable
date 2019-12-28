@@ -25,9 +25,9 @@ endif
 ;Freeram
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  if !sa1 == 0
-  !Freeram_MemoryFlag = $7FC060
+  !Freeram_MemoryFlag = $7FAD49
  else
-  !Freeram_MemoryFlag = $4001D8
+  !Freeram_MemoryFlag = $4001B9
  endif
  ;^[(Ceiling(NumberOfFlags/8)) bytes] a table containing an array of
  ; flags. The more flags you have in your hack, the more bytes are taken:
