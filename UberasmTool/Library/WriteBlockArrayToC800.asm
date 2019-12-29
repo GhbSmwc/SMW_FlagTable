@@ -21,7 +21,7 @@
 ;2) Use that index number to find what group the level is
 ;   associated with.
 ;3) Take the now-known group in !Freeram_MemoryFlag and transfer
-;   the data into $7FC060-$$7FC06F.
+;   the data into $7FC060-$7FC06F.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadFlagTableToCM16:
 	PHB				;\update bank

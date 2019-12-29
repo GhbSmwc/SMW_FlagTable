@@ -19,45 +19,37 @@
 	</head>
 	<body onload="Calculate()">
 	
-	<kbd>!Freeram_MemoryFlag = </kbd>$<input type="text" onchange="Calculate()" value="7FC060" id="Freeram_MemoryFlag" list="MemoryFlagTables">
-	<button onclick="IncreaseDecreaseHexInput(1, 'Freeram_MemoryFlag', 0, parseInt('FFFFFF', 16)) ">+</button>
-	<button onclick="IncreaseDecreaseHexInput(-1, 'Freeram_MemoryFlag', 0, parseInt('FFFFFF', 16)) ">-</button>
+	<kbd>!Freeram_MemoryFlag = </kbd>$<input type="text" onchange="Calculate()" value="7FAD49" id="Freeram_MemoryFlag" list="MemoryFlagTables"><button onclick="IncreaseDecreaseHexInput(1, 'Freeram_MemoryFlag', 0, parseInt('FFFFFF', 16)) ">+</button><button onclick="IncreaseDecreaseHexInput(-1, 'Freeram_MemoryFlag', 0, parseInt('FFFFFF', 16)) ">-</button>
 	<datalist id="MemoryFlagTables">
-	<option value="7FC060">Default RAM address</option>
+	<option value="7FAD49">Default RAM address</option>
+	<option value="4001B9">Default RAM address (SA-1)</option>
 	</datalist><br>
-	Number of Bit Flags = <input type="number" onchange="Calculate()" value="1" id="NumberOfBitFlags"> (<kbd>$<span id="HexNumberOfFlags"></span></kbd>)<br><br>
+	Number of group-128s = <input type="number" onchange="Calculate()" value="2" min="1" max="16" id="NumberOfGroup128"><br><br>
 	
 	<span id="Output"></span>
 <script>
 	function Calculate() {
-		var FlagTable = clamp(parseInt(document.getElementById("Freeram_MemoryFlag").value, 16), 0, parseInt("FFFFFF", 16))
-		document.getElementById("Freeram_MemoryFlag").value = FlagTable.toString(16).toUpperCase()
-		var NumberOfBits = clamp(parseInt(document.getElementById("NumberOfBitFlags").value, 10), 1, 256)
-		document.getElementById("NumberOfBitFlags").value = NumberOfBits.toString(10)
-		document.getElementById("HexNumberOfFlags").innerHTML = NumberOfBits.toString(16).toUpperCase()
+		var MemoryFlag = clamp(parseInt(document.getElementById("Freeram_MemoryFlag").value, 16), 0, parseInt("FFFFFF", 16))
+		document.getElementById("Freeram_MemoryFlag").value = MemoryFlag.toString(16).toUpperCase()
+		var NumberOfGroup128 = clamp(parseInt(document.getElementById("NumberOfGroup128").value, 10), 1, 16)
+		document.getElementById("NumberOfGroup128").value = NumberOfGroup128.toString(10)
 		
-		var NumberOfBytes = Math.ceil(NumberOfBits/8)
+		var NumberOfBytes = NumberOfGroup128*16
+		var TotalNumberOfBits = NumberOfBytes*8
 		
 		var Output = ""
 		document.getElementById("Output").innerHTML = ""
 		
 		Output += "<table>"
 		Output += "<tr>"
-		Output += "<td>Bit numbering:</td>"
-		Output += "<td><kbd>0</kbd> to <kbd>" + (NumberOfBits-1).toString(10) + "</kbd> (<kbd>$" + (NumberOfBits-1).toString(16).toUpperCase() + "</kbd>)</td>"
-		Output += "</tr>"
+		Output += "<td><kbd>!Freeram_MemoryFlag</kbd> range:</td>"
+		Output += "<td><kbd>$" + MemoryFlag.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+(NumberOfBytes-1)).toString(16).toUpperCase() + "</kbd></td>"
 		Output += "<tr>"
-		Output += "<td>Number of bytes:</td>"
-		Output += "<td><kbd>" + NumberOfBytes.toString(10) + "</kbd> (<kbd>$" + NumberOfBytes.toString(16).toUpperCase() + "</kbd>)</td>"
-		Output += "</tr>"
 		Output += "<tr>"
-		Output += "<td>RAM address range:</td>"
-		Output += "<td><kbd>$" + FlagTable.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (FlagTable+(NumberOfBytes-1)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag</kbd> to <kbd>!Freeram_MemoryFlag+$" + (NumberOfBytes-1).toString(16).toUpperCase() + "</kbd>)</td>"
+		Output += "<td><kbd>Group-128 numbering:</td>"
+		Output += "<td><kbd>$0</kbd> to <kbd>$" + (NumberOfGroup128-1).toString(16).toUpperCase() + "</kbd></td>"
 		Output += "</tr>"
-		Output += "</table><br><br>"
-		
-		Output += "<table>"
-		Output += "<tr><th>RAM address</th><th>Bit number</th><th>Bit in byte</th></tr>"
+		Output += "</table><br>"
 		
 		var BitIndexCount = 0
 		var WhatBitInByte = [
@@ -70,10 +62,25 @@
 		"<kbd>%-X------</kbd> (bit <kbd>6</kbd>)",
 		"<kbd>%X-------</kbd> (bit <kbd>7</kbd>)",
 		]
-		for (BitIndexCount = 0; BitIndexCount < NumberOfBits; BitIndexCount++) {
+		
+		Output += "<table>"
+		Output += "<tr>"
+		Output += "<th>Address of <kbd>!Freeram_MemoryFlag</kbd></th>"
+		Output += "<th>LM's <kbd>$7FC060</kbd></th>"
+		Output += "<th>Flag number</th>"
+		Output += "<th>Bit in byte</th>"
+		Output += "</tr>"
+		
+		for (BitIndexCount = 0; BitIndexCount < TotalNumberOfBits; BitIndexCount++) {
+			if ((BitIndexCount % 128) == 0) {
+				Output += "<tr><th colspan='4'>Group <kbd>$" + (Math.floor(BitIndexCount/128)).toString(16).toUpperCase() + "</kbd></th></tr>"
+			}
 			Output += "<tr>"
 			if ((BitIndexCount % 8) == 0) {
-				Output += "<td rowspan='8'><kbd>$" + (FlagTable + Math.floor((BitIndexCount)/8)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + Math.floor((BitIndexCount)/8).toString(16).toUpperCase() + "</kbd>)</td>"
+				Output += "<td rowspan='8'><kbd>$" + (MemoryFlag+(Math.floor(BitIndexCount/8))).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + (Math.floor(BitIndexCount/8)).toString(16).toUpperCase() + "</kbd>)</td>"
+			}
+			if ((BitIndexCount % 8) == 0) {
+				Output += "<td rowspan='8'><kbd>$" + (parseInt("7FC060", 16) + (Math.floor(BitIndexCount/8)) % 16).toString(16).toUpperCase()  + "</kbd></td>"
 			}
 			Output += "<td><kbd>" + BitIndexCount.toString(10) + "</kbd> (<kbd>$" + BitIndexCount.toString(16).toUpperCase() + "</kbd>)</td>"
 			Output += "<td>" + WhatBitInByte[BitIndexCount % 8] + "</td>"
