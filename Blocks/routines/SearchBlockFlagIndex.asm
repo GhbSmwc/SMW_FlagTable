@@ -16,15 +16,14 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;-[$010B|!addr] to [$010C|!addr]: Current level number. No need to write on this since it is pre-written.
 ;
 ;Output:
-;-A (16-bit): the flag number, times 2 (so if it is flag 3, then A = $0006). Ranges from 0-510 ($0000-$01FE), (unless you
-; added more than 256 items in the table which you shouldn't since flag numbering is designed to have up to 256 entries).
-; Simply use LSR to convert to flag number. If a block wasn't assigned to any $C800_index listed here, then X=$FFFE.
+;-A (16-bit): the flag number, times 2 (so if it is flag 3, then A = $0006). With 16 (maximum) group-256s, A would ranges
+; from 0 to 4094 ($0000 to $0FFE)
 ; Recommended to add a check X=$FFFE as a failsafe in case of a bug could happen or if you accidentally placed a block
 ; at a location that isn't assigned.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	PHX		;>This is needed if you are going to have sprites interacting with this block.
 	REP #$30
-	LDX.w #(?GetFlagNumberC800IndexEnd-?GetFlagNumberC800IndexStart)-2 ;>Obtain the last index.
+	LDX.w #(?GetFlagNumberC800IndexEnd-?GetFlagNumberC800IndexStart)-2 ;>Start at the last index.
 	-
 	LDA $010B|!addr
 	CMP.l ?GetFlagNumberLevelIndexStart,x			;\If level number not match, next
@@ -60,7 +59,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	?GetFlagNumberLevelIndexStart:
 	;List of level numbers. This is essentially what level the flags are in.
 	dw $0105						;>Flag 0 (X=$0000)
-	dw $0105						;>Flag 1 (X=$0002)
+	dw $0106						;>Flag 1 (X=$0002)
 	?GetFlagNumberLevelIndexEnd:
 	?GetFlagNumberC800IndexStart:
 	;List of positions.
@@ -76,6 +75,6 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	; take the <YPos_in_hex> and add 1 AND THEN multiply by $10 (or just add a zero at the end;
 	; example: ($1A + 1)*$10 = $1B0)
 	;-$XXXX and $YYYY are the block coordinates, in units of 16x16 blocks (not pixels).
-	dw GetC800IndexHorizLvl($01B0, $000F, $0014)		;>Flag 0 (X=$0000)
-	dw GetC800IndexHorizLvl($01B0, $001F, $0014)		;>Flag 1 (X=$0002)
+	dw GetC800IndexHorizLvl($01B0, $0002, $0016)		;>Flag 0 (X=$0000)
+	dw GetC800IndexHorizLvl($01B0, $0002, $0016)		;>Flag 1 (X=$0002)
 	?GetFlagNumberC800IndexEnd:
