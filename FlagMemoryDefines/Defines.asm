@@ -50,7 +50,8 @@ endif
  ; !Freeram_MemoryFlag+$10 to !Freeram_MemoryFlag+$1F: used in level $107, $102, $103 ($107: 0-49, $102: 50-100, $103: 101-127)
  ;
  ; It would be foolish to use this ASM resource if your entire hack
- ; uses 128 or less flags since you can use $7FC060 alone.
+ ; uses 128 or less flags since you can use $7FC060 alone. Unless you use it for
+ ; creating your own special levels.
 
  if !sa1 == 0
   !Scratchram_WriteArrayC800 = $7F844A
