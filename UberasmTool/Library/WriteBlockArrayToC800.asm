@@ -30,7 +30,7 @@ LoadFlagTableToCM16:
 	REP #$30			;>16-bit AXY
 	
 	LDX.w #(.LevelList_End-.LevelList)-2
-	LDY.w #((.OneHundredTwentyEightFlagGroupList_end-.OneHundredTwentyEightFlagGroupList)/2)-1
+	LDY.w #((.LevelList_End-.LevelList)/2)-1
 	
 	.Loop
 	LDA $010B|!addr			;\Search what index the current level is on.
@@ -67,8 +67,9 @@ LoadFlagTableToCM16:
 	;STA $02					;/$00-$02 = !Freeram_MemoryFlag+(GroupNumber*$10)
 	
 	.TransferTo7FC060
-	LDY #$10					;\Transfer.
-	LDX #$10					;|>Because STA $xxxxxx,y does not exist.
+	SEP #$30
+	LDY #$0F					;\Transfer.
+	LDX #$0F					;|>Because STA $xxxxxx,y does not exist.
 	..Loop
 	LDA [$00],y					;|
 	STA $7FC060,x					;|
@@ -103,4 +104,4 @@ LoadFlagTableToCM16:
 	; levels using the same group number (when one level uses less than
 	; 128 bits).
 	db $00
-	..End
+	..end
