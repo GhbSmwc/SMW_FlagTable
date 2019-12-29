@@ -36,13 +36,13 @@
 		Calculate()
 	}
 	function Calculate() {
-		var MemoryFlag = clamp(parseInt(document.getElementById("Freeram_MemoryFlag").value, 16), 0, parseInt("FFFFFF", 16))
+		var MemoryFlag = BigInt("0x" + clamp(parseInt(document.getElementById("Freeram_MemoryFlag").value, 16), 0, parseInt("FFFFFF", 16)).toString(16))
 		document.getElementById("Freeram_MemoryFlag").value = MemoryFlag.toString(16).toUpperCase()
-		var NumberOfGroup128 = clamp(parseInt(document.getElementById("NumberOfGroup128").value, 10), 1, 16)
+		var NumberOfGroup128 = BigInt("0x" + clamp(parseInt(document.getElementById("NumberOfGroup128").value, 10), 1, 16).toString(16))
 		document.getElementById("NumberOfGroup128").value = NumberOfGroup128.toString(10)
 		
-		var NumberOfBytes = NumberOfGroup128*16
-		var TotalNumberOfBits = NumberOfBytes*8
+		var NumberOfBytes = NumberOfGroup128*16n
+		var TotalNumberOfBits = NumberOfBytes*8n
 		
 		var Output = ""
 		document.getElementById("Output").innerHTML = ""
@@ -50,20 +50,20 @@
 		Output += "<table>"
 		Output += "<tr>"
 		Output += "<td><kbd>!Freeram_MemoryFlag</kbd> range:</td>"
-		Output += "<td><kbd>$" + MemoryFlag.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+(NumberOfBytes-1)).toString(16).toUpperCase() + "</kbd> (<kbd>" + NumberOfBytes.toString(10) + "</kbd> bytes)</td>"
+		Output += "<td><kbd>$" + MemoryFlag.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+(NumberOfBytes-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>" + NumberOfBytes.toString(10) + "</kbd> bytes)</td>"
 		Output += "<tr>"
 		Output += "<tr>"
 		Output += "<td>Group-128 numbering:</td>"
-		Output += "<td><kbd>$0</kbd> to <kbd>$" + (NumberOfGroup128-1).toString(16).toUpperCase() + "</kbd></td>"
+		Output += "<td><kbd>$0</kbd> to <kbd>$" + (NumberOfGroup128-1n).toString(16).toUpperCase() + "</kbd></td>"
 		Output += "</tr>"
 		Output += "<tr>"
 		Output += "<td>Total number of bit flags:</td>"
-		Output += "<td><kbd>" + TotalNumberOfBits.toString(10) + "</kbd> (numbered from <kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1).toString(16).toUpperCase() + "</kbd>))</td>"
+		Output += "<td><kbd>" + TotalNumberOfBits.toString(10) + "</kbd> (numbered from <kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1n).toString(16).toUpperCase() + "</kbd>))</td>"
 		Output += "</tr>"
 		
 		Output += "</table><br>"
 		
-		var BitIndexCount = 0
+		var BitIndexCount = 0n
 		var WhatBitInByte = [
 		"<kbd>%-------X</kbd> (bit <kbd>0</kbd>)",
 		"<kbd>%------X-</kbd> (bit <kbd>1</kbd>)",
@@ -84,20 +84,21 @@
 		Output += "<th>Bit in byte</th>"
 		Output += "</tr>"
 		
-		for (BitIndexCount = 0; BitIndexCount < TotalNumberOfBits; BitIndexCount++) {
-			if ((BitIndexCount % 128) == 0) {
-				Output += "<tr><th colspan='5'>Group <kbd>$" + (Math.floor(BitIndexCount/128)).toString(16).toUpperCase() + "</kbd></th></tr>"
+		for (BitIndexCount = 0n; BitIndexCount < TotalNumberOfBits; BitIndexCount++) {
+			if ((BitIndexCount % 128n) == 0n) {
+				Output += "<tr><th colspan='5'>Group <kbd>$" + (BitIndexCount/128n).toString(16).toUpperCase() + "</kbd></th></tr>"
 			}
 			Output += "<tr>"
-			if ((BitIndexCount % 8) == 0) {
-				Output += "<td rowspan='8'><kbd>$" + (MemoryFlag+(Math.floor(BitIndexCount/8))).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + (Math.floor(BitIndexCount/8)).toString(16).toUpperCase() + "</kbd>)</td>"
+			if ((BitIndexCount % 8n) == 0n) {
+				Output += "<td rowspan='8'><kbd>$" + (MemoryFlag+(BitIndexCount/8n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + (BitIndexCount/8n).toString(16).toUpperCase() + "</kbd>)</td>"
 			}
-			if ((BitIndexCount % 8) == 0) {
-				Output += "<td rowspan='8'><kbd>$" + (parseInt("7FC060", 16) + (Math.floor(BitIndexCount/8)) % 16).toString(16).toUpperCase()  + "</kbd></td>"
+			if ((BitIndexCount % 8n) == 0n) {
+				//$7FC060 = 8372320
+				Output += "<td rowspan='8'><kbd>$" + (8372320n + (BitIndexCount/8n) % 16n).toString(16).toUpperCase()  + "</kbd></td>"
 			}
 			Output += "<td><kbd>" + BitIndexCount.toString(10) + "</kbd> (<kbd>$" + BitIndexCount.toString(16).toUpperCase() + "</kbd>)</td>"
-			Output += "<td><kbd>" + (BitIndexCount % 128).toString(10) + "</kbd> (<kbd>$" + (BitIndexCount % 128).toString(16).toUpperCase() + "</kbd>)</td>"
-			Output += "<td>" + WhatBitInByte[BitIndexCount % 8] + "</td>"
+			Output += "<td><kbd>" + (BitIndexCount % 128n).toString(10) + "</kbd> (<kbd>$" + (BitIndexCount % 128n).toString(16).toUpperCase() + "</kbd>)</td>"
+			Output += "<td>" + WhatBitInByte[BitIndexCount % 8n] + "</td>"
 			Output += "</tr>"
 		}
 		Output += "</table>"
