@@ -2,13 +2,13 @@
 	<head>
 		<style>
 			html {
-			background-color: white;
-			color: black;
+			background-color: #000207;
+			color: white;
 			font-family: sans-serif;
 			}
 			
 			table, th, td {
-			border: 1px solid black;
+			border: 1px solid white;
 			border-collapse: collapse;
 			}
 			
@@ -18,11 +18,13 @@
 		</style>
 	</head>
 	<body onload="Calculate()">
+	<a href="../Readme.html#MemoryCalculator">Back</a><br><br>
+	
+	
 	Note: This javascript calculator uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt"><kbd>BigInt</kbd></a> as its number format. Make sure your
 	browser supports this format. Currently (the time of writing 2019-12-29), edge, IE (why use this browser?), safari (and IOS) don't support this format. The reason is because to prevent a potential
-	rounding issues (more specifically, precision loss), especially with division (even with the <kbd>Math.floor(x/y)</kbd> function, it can round the number upwards before the floor function rounds
-	it downwards). An example is this: <kbd>Math.floor(100000000000000.9999)</kbd>, its between <kbd>100000000000000</kbd> and <kbd>100000000000001</kbd>, however, it is rounded towards <kbd>100000000000001</kbd>
-	and not <kbd>100000000000000</kbd>, which is wrong.<br><br>
+	rounding issues with the precision, <kbd>Math.floor(x/y)</kbd> could have the quotient be rounded up before the floor function kicks in). An example is this: <kbd>Math.floor(100000000000000.9999)</kbd>,
+	its between <kbd>100000000000000</kbd> and <kbd>100000000000001</kbd>, however, it is rounded towards <kbd>100000000000001</kbd> and not <kbd>100000000000000</kbd>, which is wrong.<br><br>
 	
 	<kbd>!Freeram_MemoryFlag = </kbd>$<input type="text" onchange="Calculate()" value="7FAD49" id="Freeram_MemoryFlag" list="MemoryFlagTables"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_MemoryFlag', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_MemoryFlag', 0n, BigInt('0xFFFFFF')) ">-</button>
 	<datalist id="MemoryFlagTables">

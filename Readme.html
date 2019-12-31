@@ -1,0 +1,40 @@
+<html>
+	<head>
+		<style>
+			html {
+			background-color: #000207;
+			color: white;
+			font-family: sans-serif;
+			}
+			
+			table, th, td {
+			border: 1px solid white;
+			border-collapse: collapse;
+			}
+			
+			span.NoLineBreak {
+				white-space: nowrap;
+			}
+		</style>
+	</head>
+<body>
+<center><h1>Memory-based Conditional map 16 blocks</h1></center>
+<h2>Introduction</h2>
+
+<p>This ASM resource allows you to have more than 128 bit flags in your entire game. This is useful for exploration-based hacks should you have blocks that
+shouldn't respawn when the player refreshes the level.<br><br>
+
+Note that this isn't really a <b>true</b> conditional map 16 expansion, this is because this ASM resource relies on Lunar Magic's conditional map16 blocks
+(<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags per level. This ASM resource just creates a new RAM area defined as
+<kbd>!Freeram_MemoryFlag</kbd> and &ldquo;divide&rdquo; them into groups of 16 bytes. Depending on what level you are in, all 16 bytes within a specified
+group (set by the table) will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed when
+the player leaves and return.</p>
+
+
+
+
+
+
+
+
+<span id="MemoryCalculator"><a href="Readme_files/JS_MemoryCalculator.html">Javascript tool to show memory statistics</span>:
