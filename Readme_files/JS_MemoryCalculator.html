@@ -54,15 +54,22 @@
 		var Output = ""
 		document.getElementById("Output").innerHTML = ""
 		
+		
+		
 		Output += "<table>"
 		Output += "<tr>"
 		Output += "<td><kbd>!Freeram_MemoryFlag</kbd> range:</td>"
 		Output += "<td><kbd>$" + MemoryFlag.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+(NumberOfBytes-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>" + NumberOfBytes.toString(10) + "</kbd> bytes)</td>"
-		Output += "<tr>"
-		Output += "<tr>"
-		Output += "<td>Group-128 numbering:</td>"
-		Output += "<td><kbd>$0</kbd> to <kbd>$" + (NumberOfGroup128-1n).toString(16).toUpperCase() + "</kbd></td>"
 		Output += "</tr>"
+		if (NumberOfGroup128 >= 2n) {
+			var GroupCount = 0n
+			for (GroupCount = 0n; GroupCount < NumberOfGroup128; GroupCount++) {
+				Output += "<tr>"
+				Output += "<td>Group <kbd>$" + GroupCount.toString(16).toUpperCase() + "</kbd></td>"
+				Output += "<td><kbd>$" + (MemoryFlag+(GroupCount*16n)).toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+((GroupCount*16n)+15n)).toString(16).toUpperCase() + "</kbd></td>"
+				Output += "</tr>"
+			}
+		}
 		Output += "<tr>"
 		Output += "<td>Total number of bit flags:</td>"
 		Output += "<td><kbd>" + TotalNumberOfBits.toString(10) + "</kbd> (numbered from <kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1n).toString(16).toUpperCase() + "</kbd>))</td>"

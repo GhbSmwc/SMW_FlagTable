@@ -22,19 +22,170 @@
 <h2>Introduction</h2>
 
 <p>This ASM resource allows you to have more than 128 bit flags in your entire game. This is useful for exploration-based hacks should you have blocks that
-shouldn't respawn when the player refreshes the level.<br><br>
+shouldn't respawn when the player refreshes the level. An example is locked doors and keys, especially involving backtracking.</p>
 
-Note that this isn't really a <b>true</b> conditional map 16 expansion, this is because this ASM resource relies on Lunar Magic's conditional map16 blocks
-(<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags per level. This ASM resource just creates a new RAM area defined as
-<kbd>!Freeram_MemoryFlag</kbd> and &ldquo;divide&rdquo; them into groups of 16 bytes. Depending on what level you are in, all 16 bytes within a specified
-group (set by the table) will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed when
-the player leaves and return.</p>
+<p>Note that this isn't really a <b>true</b> conditional map 16 expansion, this is because this ASM resource relies on Lunar Magic's conditional map16 blocks
+(<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags <u>per level</u>. This ASM resource just creates a new RAM area defined as
+<kbd>!Freeram_MemoryFlag</kbd> and &ldquo;divide&rdquo; them into groups of 16 bytes (I call them &ldquo;Group-128&rdquo;, 16 bytes = 128 bits). Depending on what level you are in, during level load, all 16 bytes
+within a specified group (set by the table in <kbd>UberasmTool/Library/MBM16WriteTo7FC060.asm</kbd> under the sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>)
+will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed when the player leaves and return.</p>
 
+<p>Keep in mind, you are not forced to use a different group for every level, you can reuse the same group-128 in multiple levels should the level uses less than 128 flags.
+Just be careful not to have a separate block in another level be inadvertently set the same LM flag number (which also means the same flag number for <kbd>!Freeram_MemoryFlag</kbd>)
+as the other level of the same group (example: Two levels, 105 and 106, both use group 0, one block is a key set to 0, the other level also have a key set to 0, picking up one key
+will affect the spawning of the other key, which you should avoid).</p>
 
+<p><kbd>!Freeram_MemoryFlag</kbd> is <kbd>NumberOfGroup128*$10</kbd> bytes long. <kbd>NumberOfGroup128</kbd> is how many &ldquo;groups&rdquo; of 128 bits you wanted,
+ranging from 1-16. Therefore, the absolute limit on how many bit flags you can have in the entire game is 2048. I don't think any hack would ever need this many flags,
+even if all the playable levels on an average hack uses this mechanic.</p>
 
+<p>This RAM acts as a universal global memory, and shouldn't be reset on level load and overworld (it must be &ldquo;untouched&rdquo; RAM initialized by the SRAM/BWRAM patch when the user starts the game)</p>
 
+<p>The blocks included in this ASM resources is a key (collectible and not carried like a key sprite) and locked door. How this works using this resource is that unlike
+the hack <i>Mushroom Kingdom - Under Crimson Skies</i>, this ASM pack do not use duplicate map16 blocks each having their own flag to write, instead when the player
+triggers the block, it first uses the routine found in <kbd>Blocks/routines/</kbd> on <kbd>BlkCoords2C800Index.asm</kbd> and <kbd>SearchBlockFlagIndex.asm</kbd> to
+identify what flag this block is associated to; by running <kbd>SearchBlockFlagIndex.asm</kbd>, it searches through the list to find a match. If not found, the block should
+do nothing.</p>
 
+<h2>What you need</h2>
+<ul>
+<li><a href="https://www.smwcentral.net/?p=section&a=details&id=21211">Lunar Magic</a></li>
+<li><a href="https://www.smwcentral.net/?p=section&a=details&id=19047">Gopher Popcorn Stew</a> (block inserter)</li>
+<li><a href="https://www.smwcentral.net/?p=section&a=details&id=19982">UberASM Tool</a></li>
+<li><a href="https://www.smwcentral.net/?p=section&a=details&id=18531">SRAM/BWRAM plus patch</a></li>
+</ul>
 
+<h2>Useful stuff provided here</h2>
+<ul>
+<li>I made a <span id="MemoryCalculator"><a href="Readme_files/JS_MemoryCalculator.html">Javascript tool</a></span> that displays the memory statistics along with what flag gets written to what flag in <kbd>$7FC060</kbd>,
+good for debugging among other things.</li>
+</ul>
 
-
-<span id="MemoryCalculator"><a href="Readme_files/JS_MemoryCalculator.html">Javascript tool to show memory statistics</span>:
+<h2>Insertion</h2>
+<ol>
+	<li>
+		Using SRAM/BWRAM plus patch.
+		<ol>
+			<li>
+				<p>Open either depending on if your hack is SA-1 or not. Now go to their tables and add this (this example assumes you're using sram and not bwram, the format will be the same anyway):
+<table><tr><td><pre>
+sram_table:	dl $7E1EA2 : dw $008D
+		dl $xxxxxx : dw &lt;size&gt;
+</pre></td></tr></table>
+				<kbd>$xxxxxx</kbd> is the RAM address <kbd>!Freeram_MemoryFlag</kbd>, and <kbd>&lt;size&gt;</kbd> is the number of bytes it consume (<kbd>NumberOfGroup128*$10</kbd>, default example: 32 bytes for 2 group-128s). Then add
+				the default values (still using the example of 32 bytes):
+<table><tr><td><pre>
+sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00,$00,$00,$00
+		db $00,$00,$00,$00,$00
+		
+		;Memory-based CM16 default values:
+		;   76543210
+		db %11111111 ;>!Freeram_MemoryFlag+$00 (flags $00-$07)
+		db %11111111 ;>!Freeram_MemoryFlag+$01 (flags $08-$0F)
+		db %11111111 ;>!Freeram_MemoryFlag+$02 (flags $10-$17)
+		db %11111111 ;>!Freeram_MemoryFlag+$03 (flags $18-$1F)
+		db %11111111 ;>!Freeram_MemoryFlag+$04 (flags $20-$27)
+		db %11111111 ;>!Freeram_MemoryFlag+$05 (flags $28-$2F)
+		db %11111111 ;>!Freeram_MemoryFlag+$06 (flags $30-$37)
+		db %11111111 ;>!Freeram_MemoryFlag+$07 (flags $38-$3F)
+		db %11111111 ;>!Freeram_MemoryFlag+$08 (flags $40-$47)
+		db %11111111 ;>!Freeram_MemoryFlag+$09 (flags $48-$4F)
+		db %11111111 ;>!Freeram_MemoryFlag+$0A (flags $50-$57)
+		db %11111111 ;>!Freeram_MemoryFlag+$0B (flags $58-$5F)
+		db %11111111 ;>!Freeram_MemoryFlag+$0C (flags $60-$67)
+		db %11111111 ;>!Freeram_MemoryFlag+$0D (flags $68-$6F)
+		db %11111111 ;>!Freeram_MemoryFlag+$0E (flags $70-$77)
+		db %11111111 ;>!Freeram_MemoryFlag+$0F (flags $78-$7F)
+		db %11111111 ;>!Freeram_MemoryFlag+$10 (flags $80-$87)
+		db %11111111 ;>!Freeram_MemoryFlag+$11 (flags $88-$8F)
+		db %11111111 ;>!Freeram_MemoryFlag+$12 (flags $90-$97)
+		db %11111111 ;>!Freeram_MemoryFlag+$13 (flags $98-$9F)
+		db %11111111 ;>!Freeram_MemoryFlag+$14 (flags $A0-$A7)
+		db %11111111 ;>!Freeram_MemoryFlag+$15 (flags $A8-$AF)
+		db %11111111 ;>!Freeram_MemoryFlag+$16 (flags $B0-$B7)
+		db %11111111 ;>!Freeram_MemoryFlag+$17 (flags $B8-$BF)
+		db %11111111 ;>!Freeram_MemoryFlag+$18 (flags $C0-$C7)
+		db %11111111 ;>!Freeram_MemoryFlag+$19 (flags $C8-$CF)
+		db %11111111 ;>!Freeram_MemoryFlag+$1A (flags $D0-$D7)
+		db %11111111 ;>!Freeram_MemoryFlag+$1B (flags $D8-$DF)
+		db %11111111 ;>!Freeram_MemoryFlag+$1C (flags $E0-$E7)
+		db %11111111 ;>!Freeram_MemoryFlag+$1D (flags $E8-$EF)
+		db %11111111 ;>!Freeram_MemoryFlag+$1E (flags $F0-$F7)
+		db %11111111 ;>!Freeram_MemoryFlag+$1F (flags $F8-$FF)
+		;Here, make sure the number of bytes (db means direct byte)
+		;matches the intended number of bytes you plan on inserting
+		;in your hack.
+</pre></td></tr></table>
+				Remember that the order in table and defaults must match. Remember that this is the default value they would be when you start a new game.
+				Keep in mind about LM's CM16:
+				<ul>
+					<li>
+						<p>With &ldquo;Always show objects&rdquo; unchecked, if the flag is 0, it uses tile <kbd>$0025</kbd>, otherwise use the tile you've just placed down. If you want
+						something to not exist but later in the game to appear, then you should default the flag to 0 and SET the bit on an event the player does something to make it appear.
+						To make it disappear and stays gone forever, you should default the flag to 1 and CLEAR the flag on an event the player does something to make it gone forever (such as
+						when the player picks up the key).</p>
+					</li>
+					<li>
+						<p>With &ldquo;Always show objects&rdquo; checked, if the flag is 0, it uses the tile you've placed down, otherwise it will use <kbd>TileYouvePlacedDown+$0100</kbd> (example:
+						if you use tile <kbd>$0425</kbd>, it will use that tile when the flag is 0, otherwise it will use <kbd>$0<u>5</u>25</kbd>, which is the next map16 page keeping its low byte).
+						Seems only useful if you don't want to use tile <kbd>$0025</kbd>. To keep things organized when using both settings (&ldquo;Always show objects&rdquo; checked
+						for some blocks and unchecked for others), I would recommend having all the default values in this table be set (<kbd>$11111111</kbd>) and always clear them when the
+						player triggers something, and have the intended &ldquo;inital&rdquo; block state on the second of the two map16 pages (<kbd>$0525</kbd> (inital) &rightarrow; <kbd>$0425</kbd>).</p>
+					</li>
+				</ul>
+				Thus, you are not restricted to using all eight ones or all eight zeroes in the bytes.</p>
+				
+			</li>
+		</ol>
+	</li>
+	<li>
+		<p>Freerams and tables:</p>
+		<ol>
+			<li>
+				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
+				<ul>
+					<li><p><kbd>UberasmTool/Library/MBM16WriteTo7FC060.asm</kbd></p></li>
+					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd></p></li>
+				</ul>
+				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>). You may have to come back,
+				edit the tables, and re-insert the blocks and uberasm tool as you edit levels. Comments should fully explained how each table correspond.</p>
+				
+				<li><p>Open <kbd>FlagMemoryDefines/Defines.asm</kbd> and edit <kbd>!Freeram_MemoryFlag</kbd> if you find RAM conflicts with another ASM resource. I highly
+				recommend make note as you insert any patches (including third party) so it is easier to keep track of.</p></li>
+			</li>
+		</ol>
+	</li>
+	<li>
+		<p>Uberasm tool insertion</p>
+		<ol>
+			<li>
+				<p>In any level that are using the flags, create/edit a .asm file (like <kbd>Level105.asm</kbd>), in that file, paste this code as <kbd>load:</kbd>:
+<table><tr><td><pre>load:
+	JSL MBM16WriteTo7FC060_LoadFlagTableToCM16
+	;[...]
+	RTL
+</pre></td></tr></table>
+				What will happen is when the level loads, <kbd>$7FC060</kbd> is now written from <kbd>!Freeram_MemoryFlag+$xx</kbd>. $xx is a number from the
+				table <kbd>.OneHundredTwentyEightFlagGroupList</kbd> in <kbd>UberasmTool/Library/MBM16WriteTo7FC060.asm</kbd></p>
+			</li>
+		</ol>
+	</li>
+	<li>Block insertion</li>
+	<li>LM and the CM16 flag number</li>
+</ol>

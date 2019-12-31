@@ -22,10 +22,10 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ; at a location that isn't assigned.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	PHX		;>This is needed if you are going to have sprites interacting with this block.
-	REP #$30
+	REP #$30						;>16-bit XY, thankfully, with the number of group-128 at max, not even close to 32768 ($8000) on the index for flag number.
 	LDX.w #(?GetFlagNumberC800IndexEnd-?GetFlagNumberC800IndexStart)-2 ;>Start at the last index.
 	-
-	LDA $010B|!addr
+	LDA $010B|!addr						;>Current level number
 	CMP.l ?GetFlagNumberLevelIndexStart,x			;\If level number not match, next
 	BNE ++							;/
 	LDA $00							;\If C800 index number not match, next
@@ -45,8 +45,8 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	;that all entries are in between "Start" and "End" so that the routine
 	;above catches all the items in the list and not miss them.
 	
-	;I would recommend using Notepad++ and use [Edit -> Column editor -> Number to Insert]
-	;and:
+	;I would recommend making sure the tables here are 1 item per line and using
+	;Notepad++ and use [Edit -> Column editor -> Number to Insert] and:
 	;Initial number: 0
 	;Increase by: 1 or 2
 	;Leading zeroes: checked
@@ -54,6 +54,30 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	;so you can instantly add a comment (see example to the right of the dw table)
 	;and conveniently numbered for easy of what flag number each item in their tables
 	;are associated to.
+	;
+	;After inserting the column, make sure you check that the index number in that
+	;column at the bottom does not exceed the last flag number index in your hack
+	;that you're going to use.
+	;
+	;
+	;Example: 2 Group-128 means flag number up to 255 is valid
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;?GetFlagNumberLevelIndexStart
+	;dw $0105						;>Flag 0 (X=$0000)
+	;dw $0106						;>Flag 1 (X=$0002)
+	;[...]
+	;dw $0080						;>Flag 255 (X=$01FE)
+	;dw $0081						;>Flag 256 (X=$0200) >This one is exceeding the last index.
+	;?GetFlagNumberLevelIndexEnd
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;Same goes with the second table:
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;?GetFlagNumberC800IndexStart:
+	;dw GetC800IndexHorizLvl($01B0, $0002, $0016)		;>Flag 0 (X=$0000)
+	;dw GetC800IndexHorizLvl($01B0, $0002, $0016)		;>Flag 1 (X=$0002)
+	;[...]
+	;dw GetC800IndexHorizLvl($01B0, $003D, $0010)		;>Flag 255 (X=$01FE)
+	;dw GetC800IndexHorizLvl($01B0, $00B8, $0014)		;>Flag 256 (X=$0200) >This one is exceeding the last index.
 	
 	
 	?GetFlagNumberLevelIndexStart:
