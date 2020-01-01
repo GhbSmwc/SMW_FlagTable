@@ -84,13 +84,11 @@ LoadFlagTableToCM16:
 	PLB				;>Restore bank
 	RTL
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;Tables below. Each item in the table is each level assigned
-	;to what "group-128". Orders of the two tables will correspond,
-	;meaning the first item on [.LevelList] pairs with the first
-	;item in [.OneHundredTwentyEightFlagGroupList], second on second,
-	;and so fourth.
+	;Tables below. Each item in the table is each level.
+	;Orders correspond on each table (all first items
+	;are associated, second associated, and so on).
 	;
-	;Note: Every level is assigned to EXACTLY ONE group-128, you
+	;Note: Every level must be assigned to EXACTLY ONE group-128, you
 	;cannot assign one level to multiple group-128s. However, you
 	;can have 2+ levels using the same group.
 	;

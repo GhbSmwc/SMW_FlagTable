@@ -21,35 +21,41 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ; Recommended to add a check X=$FFFE as a failsafe in case of a bug could happen or if you accidentally placed a block
 ; at a location that isn't assigned.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	PHX		;>This is needed if you are going to have sprites interacting with this block.
+	PHX							;>This is needed if you are going to have sprites interacting with this block.
+	PHB							;>Preserve bank
+	PHK							;\Adjust bank for any $xxxx,y
+	PLB							;/
 	REP #$30						;>16-bit XY, thankfully, with the number of group-128 at max, not even close to 32768 ($8000) on the index for flag number.
 	LDX.w #(?GetFlagNumberC800IndexEnd-?GetFlagNumberC800IndexStart)-2 ;>Start at the last index.
+	LDY.w #((?GetFlagNumberC800IndexEnd-?GetFlagNumberC800IndexStart)/2)-1
 	-
 	LDA $010B|!addr						;>Current level number
 	CMP.l ?GetFlagNumberLevelIndexStart,x			;\If level number not match, next
+	BNE ++							;/
+	SEP #$20
+	LDA $1933|!addr						;\If layer 1 or 2 does not match, next
+	CMP.w ?GetFlagNumberLayerProcessingStart,y		;|
+	REP #$20
 	BNE ++							;/
 	LDA $00							;\If C800 index number not match, next
 	CMP.l ?GetFlagNumberC800IndexStart,x			;/
 	BNE ++
 	BRA +							;>Match found.
 	++
+	DEY
 	DEX #2							;>Next item.
 	BPL -							;>Loop till X=$FFFE (no match found), thankfully, 255*2 = 510 ($01FE) is less than 32768 ($8000).
 	+
 	TXA							;>Transfer indexCount*2 to A
 	SEP #$30
+	PLB							;>Restore bank.
 	PLX							;>Restore potential sprite index.
 	RTL
 	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;Tables below. Each item in the table is each flag number
-	;(index numbering the list), what level it is in, and what
-	;location in the level ($C800 index).
-	;
-	;Orders of the two tables will correspond, meaning the first
-	;item on [?GetFlagNumberLevelIndexStart] pairs with the first
-	;item in [?GetFlagNumberC800IndexStart], second on second,
-	;and so fourth.
+	;Tables below. Each item in the table is each flag number.
+	;Orders correspond on each table (all first items
+	;are associated, second associated, and so on).
 	;
 	;Also make sure the list is entirely in between the starting labels
 	;([?GetFlagNumberLevelIndexStart] and [?GetFlagNumberC800IndexStart]) and the
@@ -99,6 +105,11 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	dw $0105						;>Flag 0 (X=$0000)
 	dw $0106						;>Flag 1 (X=$0002)
 	?GetFlagNumberLevelIndexEnd:
+	?GetFlagNumberLayerProcessingStart:
+	;List of what layer the block is on.
+	db $00							;>Flag 0
+	db $00							;>Flag 1
+	?GetFlagNumberLayerProcessingEnd:
 	?GetFlagNumberC800IndexStart:
 	;List of positions.
 	;With the help of asar's function (not sure if Xkas first made this or not),
