@@ -6,7 +6,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;Make sure you have [math round on] to prevent unexpected rounded numbers.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;This routine takes the current block $C800 index (first convert its XY coordinate into $C800 index)
-;compares it to a list of $C800 indexes determine what flag the block is assigned to.
+;compares it to a list of $C800 indexes determine what flag number the block is assigned to.
 ;
 ;The reason of having a list of indexes instead of XY coordinates is because each XY coordinate takes up a total of 4
 ;bytes (2 bytes for each axis, X and Y) per flag, while $C800_index takes only 2 bytes per flag.
@@ -16,8 +16,8 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;-[$010B|!addr] to [$010C|!addr]: Current level number. No need to write on this since it is pre-written.
 ;
 ;Output:
-;-A (16-bit): the flag number, times 2 (so if it is flag 3, then A = $0006). With 16 (maximum) group-256s, A would ranges
-; from 0 to 4094 ($0000 to $0FFE)
+;-A (16-bit): the flag number, times 2 (so if it is flag 3, then A = $0006). With 16 (maximum) group-256s, A would range
+; from 0 to 4094 ($0000 to $0FFE).
 ; Recommended to add a check X=$FFFE as a failsafe in case of a bug could happen or if you accidentally placed a block
 ; at a location that isn't assigned.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -40,11 +40,22 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	SEP #$30
 	PLX							;>Restore potential sprite index.
 	RTL
-	;Note: The order in these tables relates to the flag numbering, as you
-	;go down the list, the flag number increases (starting from 0). Make sure
-	;that all entries are in between "Start" and "End" so that the routine
-	;above catches all the items in the list and not miss them.
 	
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;Tables below. Each item in the table is each flag number
+	;(index numbering the list), what level it is in, and what
+	;location in the level ($C800 index).
+	;
+	;Orders of the two tables will correspond, meaning the first
+	;item on [?GetFlagNumberLevelIndexStart] pairs with the first
+	;item in [?GetFlagNumberC800IndexStart], second on second,
+	;and so fourth.
+	;
+	;Also make sure the list is entirely in between the starting labels
+	;([?GetFlagNumberLevelIndexStart] and [?GetFlagNumberC800IndexStart]) and the
+	;ending label ([?GetFlagNumberLevelIndexEnd] and [?GetFlagNumberC800IndexEnd])
+	;so that all are counted properly during execution.
+	;
 	;I would recommend making sure the tables here are 1 item per line and using
 	;Notepad++ and use [Edit -> Column editor -> Number to Insert] and:
 	;Initial number: 0
@@ -82,6 +93,9 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	
 	?GetFlagNumberLevelIndexStart:
 	;List of level numbers. This is essentially what level the flags are in.
+	;
+	;Note: you CAN have duplicate level numbers here if you have multiple flags
+	;in a single level.
 	dw $0105						;>Flag 0 (X=$0000)
 	dw $0106						;>Flag 1 (X=$0002)
 	?GetFlagNumberLevelIndexEnd:

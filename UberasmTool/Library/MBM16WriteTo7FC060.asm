@@ -83,7 +83,31 @@ LoadFlagTableToCM16:
 	SEP #$30
 	PLB				;>Restore bank
 	RTL
-	
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;Tables below. Each item in the table is each level assigned
+	;to what "group-128". Orders of the two tables will correspond,
+	;meaning the first item on [.LevelList] pairs with the first
+	;item in [.OneHundredTwentyEightFlagGroupList], second on second,
+	;and so fourth.
+	;
+	;Note: Every level is assigned to EXACTLY ONE group-128, you
+	;cannot assign one level to multiple group-128s. However, you
+	;can have 2+ levels using the same group.
+	;
+	;Also make sure the list is entirely in between the starting labels
+	;([.LevelList] and [.OneHundredTwentyEightFlagGroupList]) and the
+	;ending label [..End] so that all are counted properly during execution.
+	;
+	;I would recommend making sure the tables here are 1 item per line and using
+	;Notepad++ and use [Edit -> Column editor -> Number to Insert] and:
+	;Initial number: 0
+	;Increase by: 1 or 2
+	;Leading zeroes: checked
+	;Format: Dec or hex
+	;so you can instantly add a comment (see example to the right of the dw table)
+	;and conveniently numbered for easy of what flag number each item in their tables
+	;are associated to.
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.LevelList
 	;Avoid having duplicate level numbers here, thus all level numbers
 	;must be unique.
@@ -105,6 +129,9 @@ LoadFlagTableToCM16:
 	; make it impossible if you want to conserve RAM by having multiple
 	; levels using the same group number (when one level uses less than
 	; 128 bits).
+	;
+	; You CAN have duplicate numbers here if you wanted multiple levels
+	; using the same group-128.
 	db $00			;>Item 0
 	db $10			;>Item 1
 	..end
