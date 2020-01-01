@@ -177,7 +177,7 @@ sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
 			<li>
 				<p>In any level that are using the flags, create/edit a .asm file (like <kbd>Level105.asm</kbd>), in that file, paste this code as <kbd>load:</kbd>:
 <table><tr><td><pre>load:
-	JSL MBM16WriteTo7FC060_LoadFlagTableToCM16
+	JSL MBCM16WriteTo7FC060_LoadFlagTableToCM16
 	;[...]
 	RTL
 </pre></td></tr></table>
