@@ -30,6 +30,7 @@ HeadInside:
 	BEQ Done			;/
 	LSR				;>Convert to index number from Index*2.
 	SEP #$20
+	CLC
 	%SetBlockFlagIndex()
 	Done:
 	SEP #$30			;>Just in case.

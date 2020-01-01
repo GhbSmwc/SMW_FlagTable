@@ -7,6 +7,7 @@
 ;
 ;Input:
 ; A (8-bit) = what bit number (a flag), 0-255 ($00-$FF)
+; Carry = SET if to set a bit in table, otherwise clear.
 ;Output:
 ; -X (8-bit) = What byte in byte-array to check from.
 ;  Up to X=31 ($1F) due to floor(255/8).
@@ -20,7 +21,16 @@
 	PLA			;>Restore what was originally in the input.
 	LSR #3			;>ByteNumber = floor(Bitnumber/8)
 	TAX			;>Place in X.
+	BCS ?SetBit
 	
+	;ClearBit
+	LDA ?BitSelectTable,y
+	EOR.b #%11111111
+	AND !Freeram_MemoryFlag,x
+	STA !Freeram_MemoryFlag,x
+	RTL
+	
+	?SetBit
 	LDA ?BitSelectTable,y
 	ORA !Freeram_MemoryFlag,x
 	STA !Freeram_MemoryFlag,x
