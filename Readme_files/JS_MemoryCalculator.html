@@ -63,8 +63,8 @@
 		Output += "<td><kbd>$" + MemoryFlag.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+(NumberOfBytes-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag</kbd> to <kbd>!Freeram_MemoryFlag+$" + (NumberOfBytes-1n).toString(16).toUpperCase() + "</kbd>), <kbd>" + NumberOfBytes.toString(10) + "</kbd> bytes</td>"
 		Output += "</tr>"
 		Output += "<tr>"
-		Output += "<td>Total number of bit flags:</td>"
-		Output += "<td><kbd>" + TotalNumberOfBits.toString(10) + "</kbd> (numbered from <kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1n).toString(16).toUpperCase() + "</kbd>))</td>"
+		Output += "<td>Bit numbering range:</td>"
+		Output += "<td><kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1n).toString(10).toUpperCase() + "</kbd>, <kbd>" + TotalNumberOfBits.toString(10) + "</kbd> bits)</td>"
 		Output += "</tr>"
 		if (NumberOfGroup128 >= 2n) {
 			var GroupCount = 0n
@@ -117,7 +117,54 @@
 			Output += "<td>" + WhatBitInByte[BitIndexCount % 8n] + "</td>"
 			Output += "</tr>"
 		}
-		Output += "</table>"
+		Output += "</table><br><br>"
+		
+		//Generate placeholder tables
+		Output += "<h2>Placeholder for ASM tables</h2>"
+		Output += "<h3>SRAM/BWRAM plus</h3>"
+		Output += "<table><tr><td><pre>"
+		Output += "	dl $" + MemoryFlag.toString(16).toUpperCase() + " : dw " + NumberOfBytes.toString(10) + "<br>"
+		Output += "	;[...]<br>"
+		var PlaceHolderLoopCount = 0
+		for (PlaceHolderLoopCount = 0; PlaceHolderLoopCount < NumberOfBytes; PlaceHolderLoopCount++) {
+			Output += "	db %11111111		;&gt;!Freeram_MemoryFlag+$" + PlaceHolderLoopCount.toString(16).toUpperCase() + "<br>"
+		}
+		Output += "</pre></td></tr></table>"
+		
+		Output += "<h3>SearchBlockFlagIndex.asm (custom blocks routine)</h3>"
+
+		Output += "<table><tr><td><pre>"
+		Output += "?GetFlagNumberLevelIndexStart:<br>"
+		for (PlaceHolderLoopCount = 0; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
+			Output += "	dw $FFFF		;&gt;Flag " + PlaceHolderLoopCount.toString(10) + "<br>"
+		}
+		Output += "	;[...]<br>"
+		Output += "?GetFlagNumberLayerProcessingStart:<br>"
+		for (PlaceHolderLoopCount = 0; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
+			Output += "	db $00		;&gt;Flag " + PlaceHolderLoopCount.toString(10) + "<br>"
+		}
+		Output += "	;[...]<br>"
+		Output += "?GetFlagNumberC800IndexStart:<br>"
+		for (PlaceHolderLoopCount = 0; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
+			Output += "	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;&gt;Flag " + PlaceHolderLoopCount.toString(10) + "<br>"
+		}
+		Output += "</pre></td></tr></table><br>"
+		
+		Output += "<h3>MBCM16WriteTo7FC060.asm (uberasm tool)</h3>"
+		Output += "Note: if you have any levels not using the MBCM16, feel free to delete from the bottom up."
+		Output += "<table><tr><td><pre>"
+		Output += ".LevelList<br>"
+		for (PlaceHolderLoopCount = 0; PlaceHolderLoopCount < 512; PlaceHolderLoopCount++) {
+			//Assuming if all levels would ever use the group-128
+			Output += "	dw $FFFF		;&gt;Order number " + PlaceHolderLoopCount.toString(10) + "<br>"
+		}
+		Output += ".OneHundredTwentyEightFlagGroupList<br>"
+		for (PlaceHolderLoopCount = 0; PlaceHolderLoopCount < 512; PlaceHolderLoopCount++) {
+			Output += "	db $00			;&gt;Order number " + PlaceHolderLoopCount.toString(10) + "<br>"
+		}
+
+
+		//And edit the HTML via JS code
 		document.getElementById("Output").innerHTML = Output
 	}
 	function BigintClamp(num, min, max) {

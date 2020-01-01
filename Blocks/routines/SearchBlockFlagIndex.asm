@@ -106,7 +106,8 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	dw $0106						;>Flag 1 (X=$0002)
 	?GetFlagNumberLevelIndexEnd:
 	?GetFlagNumberLayerProcessingStart:
-	;List of what layer the block is on.
+	;List of what layer the block is on. Put "$01" for layer 2 blocks if you
+	;are using a layer 2 level and have the blocks on that layer.
 	db $00							;>Flag 0
 	db $00							;>Flag 1
 	?GetFlagNumberLayerProcessingEnd:

@@ -27,7 +27,7 @@ shouldn't respawn when the player refreshes the level. An example is locked door
 <p>Note that this isn't really a <b>true</b> conditional map 16 expansion, this is because this ASM resource relies on Lunar Magic's conditional map16 blocks
 (<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags <u>per level</u>. This ASM resource just creates a new RAM area defined as
 <kbd>!Freeram_MemoryFlag</kbd> and &ldquo;divide&rdquo; them into groups of 16 bytes (I call them &ldquo;Group-128&rdquo;, 16 bytes = 128 bits). Depending on what level you are in, during level load, all 16 bytes
-within a specified group (set by the table in <kbd>UberasmTool/Library/MBM16WriteTo7FC060.asm</kbd> under the sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>)
+within a specified group (set by the table in <kbd>UberasmTool/Library/MBCM16WriteTo7FC060.asm</kbd> under the sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>)
 will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed when the player leaves and return.</p>
 
 <p>Keep in mind, you are not forced to use a different group for every level, you can reuse the same group-128 in multiple levels should the level uses less than 128 flags.
@@ -160,7 +160,7 @@ sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
 			<li>
 				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
 				<ul>
-					<li><p><kbd>UberasmTool/Library/MBM16WriteTo7FC060.asm</kbd></p></li>
+					<li><p><kbd>UberasmTool/Library/MBCM16WriteTo7FC060.asm</kbd></p></li>
 					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd></p></li>
 				</ul>
 				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>). You may have to come back,
@@ -182,10 +182,39 @@ sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
 	RTL
 </pre></td></tr></table>
 				What will happen is when the level loads, <kbd>$7FC060</kbd> is now written from <kbd>!Freeram_MemoryFlag+$xx</kbd>. $xx is a number from the
-				table <kbd>.OneHundredTwentyEightFlagGroupList</kbd> in <kbd>UberasmTool/Library/MBM16WriteTo7FC060.asm</kbd></p>
+				table <kbd>.OneHundredTwentyEightFlagGroupList</kbd> in <kbd>UberasmTool/Library/MBCM16WriteTo7FC060.asm</kbd></p>
 			</li>
 		</ol>
 	</li>
 	<li>Block insertion</li>
 	<li>LM and the CM16 flag number</li>
 </ol>
+<h2>Troubleshooting</h2>
+<ul>
+	<li>
+		If you're unsure if you had set up the flag and level tables correctly I have some protips:
+		<ul>
+			<li>
+				<p>Use the block <kbd>Template_PermaDisappear.asm</kbd>, place it in the level, and touch it. If it doesn't disappear in a puff of smoke, then
+				that block location isn't assigned to a flag number. You can use other blocks, they will simply do nothing if it doesn't find its location associated to a flag number.</p>
+			</li>
+			<li>
+				<p>If the block do function but keeps respawning on level load, then that means there is something wrong with the following:</p>
+				<ul>
+					<li>
+						<p>You forgot to use LM's conditional map16 for that block, or you set it to use the wrong flag number.</p>
+					</li>
+					<li>
+						<p><kbd>MBCM16WriteTo7FC060.asm</kbd> (uberasm tool library) isn't set up correctly, set to use the wrong level number or wrong group-128.</p>
+					</li>
+					<li>
+						<p>You must've set the block to the wrong flag number that is assigned.</p>
+					</li>
+				</ul>
+				<p>Otherwise if another block in the same level disappears, then you've set the block to the same flag number. This is correct for multi-block gates bigger than a 1x1 block
+				so that the whole door remains gone when unlocked and level refreshes, however if 2+ separate things in the same level uses the same $7FC060 flag number, then both are affected,
+				which any of them have been set to the wrong flag.</p>
+			</li>
+		</ul>
+	</li>
+</ul>
