@@ -64,14 +64,14 @@
 		Output += "</tr>"
 		Output += "<tr>"
 		Output += "<td>Bit numbering range:</td>"
-		Output += "<td><kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1n).toString(10).toUpperCase() + "</kbd>, <kbd>" + TotalNumberOfBits.toString(10) + "</kbd> bits)</td>"
+		Output += "<td><kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1n).toString(16).toUpperCase() + "</kbd>, <kbd>" + TotalNumberOfBits.toString(10) + "</kbd> bits)</td>"
 		Output += "</tr>"
 		if (NumberOfGroup128 >= 2n) {
 			var GroupCount = 0n
 			Output += "<tr><th colspan='2'>Subranges of each group</th></tr>"
 			for (GroupCount = 0n; GroupCount < NumberOfGroup128; GroupCount++) {
 				Output += "<tr>"
-				Output += "<td>Group <kbd>$" + GroupCount.toString(16).toUpperCase() + "</kbd></td>"
+				Output += "<td>Group <kbd>$" + GroupCount.toString(16).toUpperCase() + "</kbd> (bit numbers <kbd>" + (GroupCount*128n).toString(10) + "</kbd> to <kbd>" + ((GroupCount*128n)+127n).toString(10) + "</kbd>)</td>"
 				Output += "<td><kbd>$" + (MemoryFlag+(GroupCount*16n)).toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+((GroupCount*16n)+15n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + (GroupCount*16n).toString(16).toUpperCase() + "</kbd> to <kbd>!Freeram_MemoryFlag+$" + ((GroupCount*16n)+15n).toString(16).toUpperCase()  + "</kbd>)</td>"
 				Output += "</tr>"
 			}
