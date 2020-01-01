@@ -105,5 +105,6 @@ LoadFlagTableToCM16:
 	; make it impossible if you want to conserve RAM by having multiple
 	; levels using the same group number (when one level uses less than
 	; 128 bits).
-	db $00
+	db $00			;>Item 0
+	db $10			;>Item 1
 	..end
