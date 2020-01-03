@@ -185,7 +185,7 @@
 		
 		Output2 += "?GetFlagNumberLayerProcessingStart:<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
-			Output += "	db $00		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
+			Output2 += "	db $00		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
 		}
 		Output2 += "?GetFlagNumberLayerProcessingEnd:<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
