@@ -34,8 +34,8 @@
 	Number of group-128s = <input type="number" onchange="Calculate()" value="2" min="1" max="16" id="NumberOfGroup128"><br><br>
 	
 	SRAM/BWRAM tables filled with:<br>
-	<input type="radio" name="SRAMDefaultBits" id="ID_SRAMDefaultBits0" checked onchange="Calculate"><label for="ID_SRAMDefaultBits0"><kbd>db %00000000</kbd></label><br>
-	<input type="radio" name="SRAMDefaultBits" id="ID_SRAMDefaultBits1" onchange="Calculate"><label for="ID_SRAMDefaultBits1"><kbd>db %11111111</kbd></label><br><br>
+	<input type="radio" name="SRAMDefaultBits" id="ID_SRAMDefaultBits0" checked onchange="Calculate()"><label for="ID_SRAMDefaultBits0"><kbd>db %00000000</kbd></label><br>
+	<input type="radio" name="SRAMDefaultBits" id="ID_SRAMDefaultBits1" onchange="Calculate()"><label for="ID_SRAMDefaultBits1"><kbd>db %11111111</kbd></label><br><br>
 	
 	<button onclick="reset()">Reset</button><br>
 	<hr>
@@ -139,6 +139,7 @@
 		
 		//Generate placeholder tables
 		Output += "<h3>SRAM/BWRAM plus</h3>"
+		
 		Output += "<table><tr><td><pre>"
 		Output += "	dl $" + MemoryFlag.toString(16).toUpperCase() + " : dw " + NumberOfBytes.toString(10) + "<br>"
 		Output += "	;[...]<br>"
