@@ -27,7 +27,7 @@ shouldn't respawn when the player refreshes the level. An example is locked door
 <p>Note that this isn't really a <b>true</b> conditional map 16 expansion, this is because this ASM resource relies on Lunar Magic's conditional map16 blocks
 (<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags <u>per level</u>. This ASM resource just creates a new RAM area defined as
 <kbd>!Freeram_MemoryFlag</kbd> and &ldquo;divide&rdquo; them into groups of 16 bytes (I call them &ldquo;Group-128&rdquo;, 16 bytes = 128 bits). Depending on what level you are in, during level load, all 16 bytes
-within a specified group (set by the table in <kbd>UberasmTool/Library/MBCM16WriteTo7FC060.asm</kbd> under the sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>)
+within a specified group (set by the table in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd> under the sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>)
 will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed when the player leaves and return.</p>
 
 <p>Keep in mind, you are not forced to use a different group for every level, you can reuse the same group-128 in multiple levels should the level uses less than 128 flags.
@@ -160,7 +160,7 @@ sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
 			<li>
 				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
 				<ul>
-					<li><p><kbd>UberasmTool/Library/MBCM16WriteTo7FC060.asm</kbd></p></li>
+					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p></li>
 					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd></p></li>
 				</ul>
 				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>). You may have to come back,
@@ -177,12 +177,12 @@ sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
 			<li>
 				<p>In any level that are using the flags, create/edit a .asm file (like <kbd>Level105.asm</kbd>), in that file, paste this code as <kbd>load:</kbd>:
 <table><tr><td><pre>load:
-	JSL MBCM16WriteTo7FC060_LoadFlagTableToCM16
+	JSL MBCM16WriteGroup128To7FC060_LoadFlagTableToCM16
 	;[...]
 	RTL
 </pre></td></tr></table>
 				What will happen is when the level loads, <kbd>$7FC060</kbd> is now written from <kbd>!Freeram_MemoryFlag+$xx</kbd>. $xx is a number from the
-				table <kbd>.OneHundredTwentyEightFlagGroupList</kbd> in <kbd>UberasmTool/Library/MBCM16WriteTo7FC060.asm</kbd></p>
+				table <kbd>.OneHundredTwentyEightFlagGroupList</kbd> in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p>
 			</li>
 		</ol>
 	</li>
@@ -205,7 +205,7 @@ sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
 						<p>You forgot to use LM's conditional map16 for that block, or you set it to use the wrong flag number.</p>
 					</li>
 					<li>
-						<p><kbd>MBCM16WriteTo7FC060.asm</kbd> (uberasm tool library) isn't set up correctly, set to use the wrong level number or wrong group-128.</p>
+						<p><kbd>MBCM16WriteGroup128To7FC060.asm</kbd> (uberasm tool library) isn't set up correctly, set to use the wrong level number or wrong group-128.</p>
 					</li>
 					<li>
 						<p>You must've set the block to the wrong flag number that is assigned.</p>
