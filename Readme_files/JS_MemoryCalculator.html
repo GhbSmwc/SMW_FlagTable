@@ -158,7 +158,7 @@
 		Output2 += ";Default vales for the MBCM16 blocks when you start up your new file<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < NumberOfBytes; PlaceHolderLoopCount++) {
-			Output2 += "	db %" + SRAMBWRAM_TableFiller + "		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
+			Output2 += "	db %" + SRAMBWRAM_TableFiller + "		;&gt;$" + (MemoryFlag+PlaceHolderLoopCount).toString(16).toUpperCase() + " (byte $" + PlaceHolderLoopCount.toString(16).toUpperCase() + ") Flags $" + (PlaceHolderLoopCount*8n).toString(16).toUpperCase() + " to $" + ((PlaceHolderLoopCount*8n)+7n).toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/16n).toString(16).toUpperCase() + ")<br>"
 		}
 		Output2 += "</pre></td></tr></table>"
 		
@@ -174,7 +174,7 @@
 		
 		Output += "?GetFlagNumberLevelIndexStart:<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
-			Output2 += "	dw $FFFF		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
+			Output2 += "	dw $FFFF		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
 		}
 		Output2 += "?GetFlagNumberLevelIndexEnd:<br>"
 		
@@ -185,7 +185,7 @@
 		
 		Output2 += "?GetFlagNumberLayerProcessingStart:<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
-			Output += "	db $00		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
+			Output += "	db $00		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
 		}
 		Output2 += "?GetFlagNumberLayerProcessingEnd:<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
@@ -205,7 +205,7 @@
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += "?GetFlagNumberC800IndexStart:<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
-			Output2 += "	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
+			Output2 += "	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
 		}
 		Output2 += "?GetFlagNumberC800IndexEnd:"
 		Output2 += "</pre></td></tr></table><br>"
