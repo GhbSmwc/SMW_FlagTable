@@ -20,18 +20,23 @@
 	<body onload="Calculate()">
 	<a href="../Readme.html#MemoryCalculator">Back</a><br><br>
 	
-	<span id="Top"></span>
 	Note: This javascript calculator uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt"><kbd>BigInt</kbd></a> as its number format. Make sure your
 	browser supports this format. Currently (the time of writing 2019-12-29), edge, IE (why use this browser?), safari (and IOS) don't support this format. The reason is because to prevent a potential
 	rounding issues with the precision, <kbd>Math.floor(x/y)</kbd> could have the quotient be rounded up before the floor function kicks in). An example is this: <kbd>Math.floor(100000000000000.9999)</kbd>,
 	its between <kbd>100000000000000</kbd> and <kbd>100000000000001</kbd>, however, it is rounded towards <kbd>100000000000001</kbd> and not <kbd>100000000000000</kbd>, which is wrong.<br><br>
 	
-	<kbd>!Freeram_MemoryFlag = </kbd>$<input type="text" onchange="Calculate()" value="7FAD49" id="Freeram_MemoryFlag" list="MemoryFlagTables"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_MemoryFlag', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_MemoryFlag', 0n, BigInt('0xFFFFFF')) ">-</button>
-	<datalist id="MemoryFlagTables">
+	<kbd>!Freeram_MemoryFlagRAM = </kbd>$<input type="text" onchange="Calculate()" value="7FAD49" id="Freeram_MemoryFlagRAM" list="MemoryFlagRAMTables"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_MemoryFlagRAM', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_MemoryFlagRAM', 0n, BigInt('0xFFFFFF')) ">-</button>
+	<datalist id="MemoryFlagRAMTables">
 	<option value="7FAD49">Default RAM address</option>
 	<option value="4001B9">Default RAM address (SA-1)</option>
 	</datalist><br>
-	Number of group-128s = <input type="number" onchange="Calculate()" value="2" min="1" max="16" id="NumberOfGroup128"><br><br>
+	Number of group-128s = <input type="number" onchange="Calculate()" value="2" min="1" max="16" id="NumberOfGroup128"><br>
+	<kbd>!Freeram_KeyCounter = </kbd>$<input type="text" onchange="Calculate()" value="7FAD79" id="Freeram_KeyCounter" list="MemoryFlagRAMTables1"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_KeyCounter', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_KeyCounter', 0n, BigInt('0xFFFFFF')) ">-</button>
+	<datalist id="MemoryFlagRAMTables">
+	<option value="7FAD79">Default RAM address</option>
+	<option value="4001E9">Default RAM address (SA-1)</option>
+	</datalist><br>
+	Number of separate key counters = <input type="number" onchange="Calculate()" value="2" min="1" max="255" id="NumberOfKeyCounters"><br>
 	
 	<button onclick="reset()">Reset</button><br>
 	<hr>
@@ -41,26 +46,35 @@
 	not to insert or delete items off the table that isn't the last (bottomost) item, else you would have to move the comments (starting
 	from the area that you've insert or deleted to the last) if you are using them to find what flags/level ID they are.</p>
 	
-	SRAM/BWRAM tables filled with:<br>
+	SRAM/BWRAM tables filled with for default block flags:<br>
 	<input type="radio" name="SRAMDefaultBits" id="ID_SRAMDefaultBits0" checked onchange="Calculate()"><label for="ID_SRAMDefaultBits0"><kbd>db %00000000</kbd></label><br>
 	<input type="radio" name="SRAMDefaultBits" id="ID_SRAMDefaultBits1" onchange="Calculate()"><label for="ID_SRAMDefaultBits1"><kbd>db %11111111</kbd></label><br><br>
 	
 	<span id="Output2"></span>
 <script>
 	function reset() {
-		document.getElementById("Freeram_MemoryFlag").value = "7FAD49"
+		document.getElementById("Freeram_MemoryFlagRAM").value = "7FAD49"
 		document.getElementById("ID_SRAMDefaultBits0").checked = true
 		document.getElementById("NumberOfGroup128").value = "2"
+		document.getElementById("Freeram_KeyCounter").value = "7FAD79"
+		
 		Calculate()
 	}
 	function Calculate() {
-		var MemoryFlag = BigintClamp(CorrectHexBigIntValue(document.getElementById("Freeram_MemoryFlag").value), 0n, BigInt("0xFFFFFF"))
-		document.getElementById("Freeram_MemoryFlag").value = MemoryFlag.toString(16).toUpperCase()
+		var MemoryFlagRAM = BigintClamp(CorrectHexBigIntValue(document.getElementById("Freeram_MemoryFlagRAM").value), 0n, BigInt("0xFFFFFF"))
+		document.getElementById("Freeram_MemoryFlagRAM").value = MemoryFlagRAM.toString(16).toUpperCase()
+		
 		var NumberOfGroup128 = BigintClamp(BigInt(document.getElementById("NumberOfGroup128").value), 1n, 16n)
 		document.getElementById("NumberOfGroup128").value = NumberOfGroup128.toString(10)
 		
-		var NumberOfBytes = NumberOfGroup128*16n
-		var TotalNumberOfBits = NumberOfBytes*8n
+		var KeyCounterRAM = BigintClamp(CorrectHexBigIntValue(document.getElementById("Freeram_KeyCounter").value), 0n, BigInt("0xFFFFFF"))
+		document.getElementById("Freeram_KeyCounter").value = KeyCounterRAM.toString(16).toUpperCase()
+		
+		var NumberOfKeyCounters = BigintClamp(BigInt(document.getElementById("NumberOfKeyCounters").value), 1n, 255n)
+		document.getElementById("NumberOfKeyCounters").value = NumberOfKeyCounters.toString(10)
+		
+		var NumberOfBytesOfMemoryFlagRAM = NumberOfGroup128*16n
+		var TotalNumberOfBitsOfMemoryFlagRAM = NumberOfBytesOfMemoryFlagRAM*8n
 		
 		var Output = ""
 		document.getElementById("Output").innerHTML = ""
@@ -78,12 +92,16 @@
 		Output += "<table>"
 		Output += "<tr><th colspan='2'>Total size and entire range</th></tr>"
 		Output += "<tr>"
-		Output += "<td><kbd>!Freeram_MemoryFlag</kbd> range:</td>"
-		Output += "<td><kbd>$" + MemoryFlag.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+(NumberOfBytes-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag</kbd> to <kbd>!Freeram_MemoryFlag+$" + (NumberOfBytes-1n).toString(16).toUpperCase() + "</kbd>), <kbd>" + NumberOfBytes.toString(10) + "</kbd> bytes</td>"
+		Output += "<td><kbd>!Freeram_MemoryFlagRAM</kbd> range:</td>"
+		Output += "<td><kbd>$" + MemoryFlagRAM.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlagRAM+(NumberOfBytesOfMemoryFlagRAM-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlagRAM</kbd> to <kbd>!Freeram_MemoryFlagRAM+$" + (NumberOfBytesOfMemoryFlagRAM-1n).toString(16).toUpperCase() + "</kbd>), <kbd>" + NumberOfBytesOfMemoryFlagRAM.toString(10) + "</kbd> bytes</td>"
 		Output += "</tr>"
 		Output += "<tr>"
 		Output += "<td>Flag numbering range:</td>"
-		Output += "<td><kbd>0</kbd> to <kbd>" + (TotalNumberOfBits-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBits-1n).toString(16).toUpperCase() + "</kbd>, <kbd>" + TotalNumberOfBits.toString(10) + "</kbd> bits)</td>"
+		Output += "<td><kbd>0</kbd> to <kbd>" + (TotalNumberOfBitsOfMemoryFlagRAM-1n).toString(10) + "</kbd> (<kbd>$0</kbd> to <kbd>$" + (TotalNumberOfBitsOfMemoryFlagRAM-1n).toString(16).toUpperCase() + "</kbd>, <kbd>" + TotalNumberOfBitsOfMemoryFlagRAM.toString(10) + "</kbd> bits)</td>"
+		Output += "</tr>"
+		Output += "<tr>"
+		Output += "<td><kbd>!Freeram_KeyCounter</kbd> range</td>"
+		Output += "<td><kbd>$" + KeyCounterRAM.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (KeyCounterRAM+(NumberOfKeyCounters-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>" + NumberOfKeyCounters.toString(10) + "</kbd> bytes)</td>"
 		Output += "</tr>"
 		Output += "</table><br>"
 		if (NumberOfGroup128 >= 2n) {
@@ -94,7 +112,7 @@
 			for (GroupCount = 0n; GroupCount < NumberOfGroup128; GroupCount++) {
 				Output += "<tr>"
 				Output += "<td>Group <kbd>$" + GroupCount.toString(16).toUpperCase() + "</kbd></td>"
-				Output += "<td><kbd>$" + (MemoryFlag+(GroupCount*16n)).toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlag+((GroupCount*16n)+15n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + (GroupCount*16n).toString(16).toUpperCase() + "</kbd> to <kbd>!Freeram_MemoryFlag+$" + ((GroupCount*16n)+15n).toString(16).toUpperCase()  + "</kbd>)</td>"
+				Output += "<td><kbd>$" + (MemoryFlagRAM+(GroupCount*16n)).toString(16).toUpperCase() + "</kbd> to <kbd>$" + (MemoryFlagRAM+((GroupCount*16n)+15n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlagRAM+$" + (GroupCount*16n).toString(16).toUpperCase() + "</kbd> to <kbd>!Freeram_MemoryFlagRAM+$" + ((GroupCount*16n)+15n).toString(16).toUpperCase()  + "</kbd>)</td>"
 				Output += "<td><kbd>" + (GroupCount*128n).toString(10) + "</kbd> to <kbd>" + ((GroupCount*128n)+127n).toString(10) + "</kbd> (<kbd>$" + (GroupCount*128n).toString(16).toUpperCase() + "</kbd> to <kbd>$" + ((GroupCount*128n)+127n).toString(16).toUpperCase() + "</kbd>)</td>"
 				Output += "</tr>"
 			}
@@ -117,20 +135,20 @@
 		
 		Output += "<table>"
 		Output += "<tr>"
-		Output += "<th>Address of <kbd>!Freeram_MemoryFlag</kbd></th>"
+		Output += "<th>Address of <kbd>!Freeram_MemoryFlagRAM</kbd></th>"
 		Output += "<th>LM's <kbd>$7FC060</kbd> address</th>"
-		Output += "<th><kbd>!Freeram_MemoryFlag</kbd> flag number</th>"
+		Output += "<th><kbd>!Freeram_MemoryFlagRAM</kbd> flag number</th>"
 		Output += "<th><kbd>$7FC060</kbd> flag number</th>"
 		Output += "<th>Bit in byte</th>"
 		Output += "</tr>"
 		
-		for (BitIndexCount = 0n; BitIndexCount < TotalNumberOfBits; BitIndexCount++) {
+		for (BitIndexCount = 0n; BitIndexCount < TotalNumberOfBitsOfMemoryFlagRAM; BitIndexCount++) {
 			if ((BitIndexCount % 128n) == 0n) {
 				Output += "<tr><th colspan='5'>Group <kbd>$" + (BitIndexCount/128n).toString(16).toUpperCase() + "</kbd></th></tr>"
 			}
 			Output += "<tr>"
 			if ((BitIndexCount % 8n) == 0n) {
-				Output += "<td rowspan='8'><kbd>$" + (MemoryFlag+(BitIndexCount/8n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlag+$" + (BitIndexCount/8n).toString(16).toUpperCase() + "</kbd>)</td>"
+				Output += "<td rowspan='8'><kbd>$" + (MemoryFlagRAM+(BitIndexCount/8n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_MemoryFlagRAM+$" + (BitIndexCount/8n).toString(16).toUpperCase() + "</kbd>)</td>"
 			}
 			if ((BitIndexCount % 8n) == 0n) {
 				//$7FC060 = 8372320
@@ -151,7 +169,8 @@
 		Output2 += "<h3>SRAM/BWRAM plus</h3>"
 		
 		Output2 += "<table><tr><td><pre>"
-		Output2 += "	dl $" + MemoryFlag.toString(16).toUpperCase() + " : dw " + NumberOfBytes.toString(10) + "<br>"
+		Output2 += "	dl $" + KeyCounterRAM.toString(16).toUpperCase() + " : dw " + NumberOfKeyCounters.toString(10) + "<br>"
+		Output2 += "	dl $" + MemoryFlagRAM.toString(16).toUpperCase() + " : dw " + NumberOfBytesOfMemoryFlagRAM.toString(10) + "<br>"
 		Output2 += "	;[...]<br>"
 		var PlaceHolderLoopCount = 0n
 		var SRAMBWRAM_TableFiller = "00000000"
@@ -159,10 +178,16 @@
 			SRAMBWRAM_TableFiller = "11111111"
 		}
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
-		Output2 += ";Default vales for the MBCM16 blocks when you start up your new file<br>"
+		Output2 += ";Default values for how many keys you picked up.<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
-		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < NumberOfBytes; PlaceHolderLoopCount++) {
-			Output2 += "	db %" + SRAMBWRAM_TableFiller + "		;&gt;$" + (MemoryFlag+PlaceHolderLoopCount).toString(16).toUpperCase() + " (byte $" + PlaceHolderLoopCount.toString(16).toUpperCase() + ") Flags $" + (PlaceHolderLoopCount*8n).toString(16).toUpperCase() + " to $" + ((PlaceHolderLoopCount*8n)+7n).toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/16n).toString(16).toUpperCase() + ")<br>"
+		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < NumberOfKeyCounters; PlaceHolderLoopCount++) {
+			Output2 += "	db $00		;&gt;$" + (KeyCounterRAM+PlaceHolderLoopCount).toString(16).toUpperCase() + ", Key counter $" + PlaceHolderLoopCount.toString(16).toUpperCase() + "<br>"
+		}
+		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
+		Output2 += ";Default values for the MBCM16 blocks when you start up your new file<br>"
+		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
+		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < NumberOfBytesOfMemoryFlagRAM; PlaceHolderLoopCount++) {
+			Output2 += "	db %" + SRAMBWRAM_TableFiller + "		;&gt;$" + (MemoryFlagRAM+PlaceHolderLoopCount).toString(16).toUpperCase() + " (byte $" + PlaceHolderLoopCount.toString(16).toUpperCase() + ") Flags $" + (PlaceHolderLoopCount*8n).toString(16).toUpperCase() + " to $" + ((PlaceHolderLoopCount*8n)+7n).toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/16n).toString(16).toUpperCase() + ")<br>"
 		}
 		Output2 += "</pre></td></tr></table>"
 		
@@ -177,7 +202,7 @@
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		
 		Output += "?GetFlagNumberLevelIndexStart:<br>"
-		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
+		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBitsOfMemoryFlagRAM; PlaceHolderLoopCount++) {
 			Output2 += "	dw $FFFF		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
 		}
 		Output2 += "?GetFlagNumberLevelIndexEnd:<br>"
@@ -188,7 +213,7 @@
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		
 		Output2 += "?GetFlagNumberLayerProcessingStart:<br>"
-		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
+		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBitsOfMemoryFlagRAM; PlaceHolderLoopCount++) {
 			Output2 += "	db $00		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
 		}
 		Output2 += "?GetFlagNumberLayerProcessingEnd:<br>"
@@ -208,7 +233,7 @@
 		Output2 += ";-$XXXX and $YYYY are the block coordinates, in units of 16x16 blocks (not pixels).<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += "?GetFlagNumberC800IndexStart:<br>"
-		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBits; PlaceHolderLoopCount++) {
+		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < TotalNumberOfBitsOfMemoryFlagRAM; PlaceHolderLoopCount++) {
 			Output2 += "	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;&gt;Flag $" + PlaceHolderLoopCount.toString(16).toUpperCase() + " (Group $" + (PlaceHolderLoopCount/128n).toString(16).toUpperCase() + ") -&gt; LM's CM16 flag $" + (PlaceHolderLoopCount % 128n).toString(16).toUpperCase() + "<br>"
 		}
 		Output2 += "?GetFlagNumberC800IndexEnd:"

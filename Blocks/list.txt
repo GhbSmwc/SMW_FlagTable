@@ -1,1 +1,1 @@
-;Placeholder
+500:025 CollectibleKey.asm

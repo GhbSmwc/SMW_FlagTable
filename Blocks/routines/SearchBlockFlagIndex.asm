@@ -59,7 +59,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;in a single level.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ?GetFlagNumberLevelIndexStart:
-	dw $FFFF		;>Flag $0 -> LM's CM16 $0
+	dw $0105		;>Flag $0 -> LM's CM16 $0
 	dw $FFFF		;>Flag $1 -> LM's CM16 $1
 	dw $FFFF		;>Flag $2 -> LM's CM16 $2
 	dw $FFFF		;>Flag $3 -> LM's CM16 $3
@@ -594,7 +594,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;-$XXXX and $YYYY are the block coordinates, in units of 16x16 blocks (not pixels).
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ?GetFlagNumberC800IndexStart:
-	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $0 -> LM's CM16 $0
+	dw GetC800IndexHorizLvl($01B0, $0002, $0016)		;>Flag $0 -> LM's CM16 $0
 	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $1 -> LM's CM16 $1
 	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $2 -> LM's CM16 $2
 	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $3 -> LM's CM16 $3
