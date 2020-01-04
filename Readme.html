@@ -22,7 +22,10 @@
 <h2>Introduction</h2>
 
 <p>This ASM resource allows you to have more than 128 bit flags in your entire game. This is useful for exploration-based hacks should you have blocks that
-shouldn't respawn when the player refreshes the level. An example is locked doors and keys, especially involving backtracking.</p>
+shouldn't respawn when the player refreshes the level. An example is locked doors and keys, especially involving backtracking. Another use, which is minor, is
+SA-1 hacks, since blocks are processed during SA-1, they do not have access to WRAM (RAM address in banks <kbd>$7E</kbd> and <kbd>$7F</kbd>), thus the blocks
+themselves cannot use <kbd>$7FC060</kbd> directly. Instead have blocks to use banks <kbd>$40</kbd> or <kbd>$41</kbd>, then uberasm tool to transfer that to <kbd>$7FC060</kbd>
+making it possible for custom blocks to use CM16 blocks on a SA-1 hack.</p>
 
 <p>Note that this isn't really a <b>true</b> conditional map 16 expansion, this is because this ASM resource relies on Lunar Magic's conditional map16 blocks
 (<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags <u>per level</u>. This ASM resource just creates a new RAM area defined as
@@ -30,22 +33,21 @@ shouldn't respawn when the player refreshes the level. An example is locked door
 within a specified group (set by the table in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd> under the sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>)
 will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed when the player leaves and return.</p>
 
-<p>Keep in mind, you are not forced to use a different group for every level, you can reuse the same group-128 in multiple levels should the level uses less than 128 flags.
+<p>Keep in mind, you are not forced to use a different group-128 for every level, you can reuse the same group-128 in multiple levels should the level uses less than 128 flags.
 Just be careful not to have a separate block in another level be inadvertently set the same LM flag number (which also means the same flag number for <kbd>!Freeram_MemoryFlag</kbd>)
 as the other level of the same group (example: Two levels, 105 and 106, both use group 0, one block is a key set to 0, the other level also have a key set to 0, picking up one key
 will affect the spawning of the other key, which you should avoid).</p>
 
-<p><kbd>!Freeram_MemoryFlag</kbd> is <kbd>NumberOfGroup128*$10</kbd> bytes long. <kbd>NumberOfGroup128</kbd> is how many &ldquo;groups&rdquo; of 128 bits you wanted,
+<p><kbd>!Freeram_MemoryFlag</kbd> is <kbd>NumberOfGroups*$10</kbd> bytes long. <kbd>NumberOfGroups</kbd> is how many group-128s you wanted,
 ranging from 1-16. Therefore, the absolute limit on how many bit flags you can have in the entire game is 2048. I don't think any hack would ever need this many flags,
 even if all the playable levels on an average hack uses this mechanic.</p>
 
-<p>This RAM acts as a universal global memory, and shouldn't be reset on level load and overworld (it must be &ldquo;untouched&rdquo; RAM initialized by the SRAM/BWRAM patch when the user starts the game)</p>
+<p>This RAM acts as a universal global memory, and shouldn't be reset on level load and overworld (it must be &ldquo;untouched&rdquo; RAM initialized by the SRAM/BWRAM patch when the user starts the game).</p>
 
 <p>The blocks included in this ASM resources is a key (collectible and not carried like a key sprite) and locked door. How this works using this resource is that unlike
 the hack <i>Mushroom Kingdom - Under Crimson Skies</i>, this ASM pack do not use duplicate map16 blocks each having their own flag to write, instead when the player
-triggers the block, it first uses the routine found in <kbd>Blocks/routines/</kbd> on <kbd>BlkCoords2C800Index.asm</kbd> and <kbd>SearchBlockFlagIndex.asm</kbd> to
-identify what flag this block is associated to; by running <kbd>SearchBlockFlagIndex.asm</kbd>, it searches through the list to find a match. If not found, the block should
-do nothing.</p>
+triggers the block, the block checks what level,  if its on layer 1 or 2, and its location within the level. If all 3 of these attributes are found on a specific index number,
+will use that index number to determine what flag number to set/reset a bit in <kbd>!Freeram_MemoryFlag</kbd>, otherwise it will do nothing as a failsafe.</p>
 
 <h2>What you need</h2>
 <ul>
@@ -86,15 +88,13 @@ good for debugging among other things.</li>
 		Using SRAM/BWRAM plus patch.
 		<ol>
 			<li>
-				<p>Open either depending on if your hack is SA-1 or not. Now go to their tables and add this (this example assumes you're using sram and not bwram, the format will be the same anyway):
-<table><tr><td><pre>
-sram_table:	dl $7E1EA2 : dw $008D
-		dl $xxxxxx : dw &lt;size&gt;
-</pre></td></tr></table>
-				<kbd>$xxxxxx</kbd> is the RAM address <kbd>!Freeram_MemoryFlag</kbd>, and <kbd>&lt;size&gt;</kbd> is the number of bytes it consume (<kbd>NumberOfGroup128*$10</kbd>, default example: 32 bytes for 2 group-128s). Then add
-				the default values (still using the example of 32 bytes).<br><br>
-				Remember that the order in table and defaults must match. Remember that this is the default value they would be when you start a new game.
-				Keep in mind about LM's CM16:
+				<p>Open either SRAM or BWRAM plus depending on if your hack is SA-1 or not. Now again, using the JS tool, copy the given ASM tables from an obviously named
+				section and paste them accordingly. Remember that the order in table and defaults must match (the first <kbd>dl $xxxxxx : dw $yyyy</kbd> goes to the first group of bytes
+				in &ldquo;<kbd>defaults</kbd>&rdquo;, second on second, and so on). Remember that this is the default value they would be when you start a new game.</p>
+				
+				<p>This here is the default values that are going to be copied to <kbd>$7FC060-$7FC06F</kbd> upon entering a stage using this ASM resource.</p>
+				
+				<p>Keep in mind about LM's CM16:</p>
 				<ul>
 					<li>
 						<p>With &ldquo;Always show objects&rdquo; unchecked, if the flag is 0, it uses tile <kbd>$0025</kbd>, otherwise use the tile you've just placed down. If you want
@@ -103,14 +103,15 @@ sram_table:	dl $7E1EA2 : dw $008D
 						when the player picks up the key).</p>
 					</li>
 					<li>
-						<p>With &ldquo;Always show objects&rdquo; checked, if the flag is 0, it uses the tile you've placed down, otherwise it will use <kbd>TileYouvePlacedDown+$0100</kbd> (example:
-						if you use tile <kbd>$0425</kbd>, it will use that tile when the flag is 0, otherwise it will use <kbd>$0<u>5</u>25</kbd>, which is the next map16 page keeping its low byte).
-						Seems only useful if you don't want to use tile <kbd>$0025</kbd>. To keep things organized when using both settings (&ldquo;Always show objects&rdquo; checked
+						<p>With &ldquo;Always show objects&rdquo; checked, if the flag is 0, it uses the tile you've placed down, otherwise it will use <kbd>Tile_Youve_Placed_Down+$0100</kbd> (example:
+						if you use tile <kbd>$0425</kbd>, it will use that tile when the flag is 0, otherwise it will use <kbd>$0<u>5</u>25</kbd>, which is the next map16 page keeping its low byte).</p>
+						
+						<p>Seems only useful if you don't want to use tile <kbd>$0025</kbd>. To keep things organized when using both settings (&ldquo;Always show objects&rdquo; checked
 						for some blocks and unchecked for others), I would recommend having all the default values in this table be set (<kbd>$11111111</kbd>) and always clear them when the
 						player triggers something, and have the intended &ldquo;inital&rdquo; block state on the second of the two map16 pages (<kbd>$0525</kbd> (inital) &rightarrow; <kbd>$0425</kbd> (block you place)).</p>
 					</li>
 				</ul>
-				Thus, you are not restricted to using all eight ones or all eight zeroes in the bytes.</p>
+				<p>Thus, you are not restricted to using all eight ones or all eight zeroes in the bytes.</p>
 				
 			</li>
 		</ol>
@@ -125,13 +126,30 @@ sram_table:	dl $7E1EA2 : dw $008D
 	;[...]
 	RTL
 </pre></td></tr></table>
-				What will happen is when the level loads, <kbd>$7FC060</kbd> is now written from <kbd>!Freeram_MemoryFlag+$xx</kbd>. $xx is a number from the
-				table <kbd>.OneHundredTwentyEightFlagGroupList</kbd> in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p>
+				What will happen is when the level loads, <kbd>$7FC060</kbd> is now written from <kbd>!Freeram_MemoryFlag+(&lt;Group_Number&gt;*$10)</kbd> to
+				<kbd>!Freeram_MemoryFlag+((&lt;Group_Number&gt;*$10)+$0F)</kbd>. Group number is found in <kbd>.OneHundredTwentyEightFlagGroupList</kbd>
+				in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p>
 			</li>
 		</ol>
 	</li>
 	<li>Block insertion</li>
+	<ol>
+		<li>
+			<p>Copy the list of blocks in <kbd>Blocks/list.txt</kbd> and paste it in GPS's list file. You may need to edit their map16 number (or ID number).</p>
+		</li>
+		<li>
+			<p>Copy and paste the block and routine ASM files, their folders should have obvious names to know where to put.</p>
+		</li>
+	</ol>
 	<li>LM and the CM16 flag number</li>
+	<ol>
+		<li>
+			Graphics
+		</li>
+		<li>
+			Placing blocks in level
+		</li>
+	</ol>
 </ol>
 <h2>Troubleshooting</h2>
 <ul>
