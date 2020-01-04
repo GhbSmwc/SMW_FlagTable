@@ -36,6 +36,10 @@
 	<button onclick="reset()">Reset</button><br>
 	<hr>
 	<span id="Output"></span>
+	<h2>Placeholder table templates</h2>
+	<p>I made this so it is easier to paste the tables in their respective ASM files. All you have to do is edit some placeholder values. Careful
+	not to insert or delete items off the table that isn't the last (bottomost) item, else you would have to move the comments (starting
+	from the area that you've insert or deleted to the last) if you are using them to find what flags/level ID they are.</p>
 	
 	SRAM/BWRAM tables filled with:<br>
 	<input type="radio" name="SRAMDefaultBits" id="ID_SRAMDefaultBits0" checked onchange="Calculate()"><label for="ID_SRAMDefaultBits0"><kbd>db %00000000</kbd></label><br>
@@ -64,7 +68,7 @@
 		Output += "This JS file also generate ASM tables below this HTML table. For quick access, you can CTRL+F these to instantly jump to:"
 		Output += "<ul>"
 		Output += "<li>SRAM/BWRAM plus</li>"
-		Output += "<li>SearchBlockFlagIndex.asm</li><ul>"
+		Output += "<li>SearchBlockFlagIndex.asm (custom blocks routine)</li><ul>"
 		Output += "<li>?GetFlagNumberLayerProcessingStart</li>"
 		Output += "<li>?GetFlagNumberC800IndexStart</li></ul>"
 		Output += "<li>MBCM16WriteGroup128To7FC060.asm (uberasm tool)</li><ul>"
@@ -223,6 +227,11 @@
 		Output2 += ";Also, you cannot have duplicate level numbers here, else during<br>"
 		Output2 += ";running this, it will ONLY take the last level number of the duplicates<br>"
 		Output2 += ";matching with the current level number.<br>"
+		Output2 += ";<br>"
+		Output2 += ";Although I could simply only have the table [.OneHundredTwentyEightFlagGroupList], have the index be<br>"
+		Output2 += ";the level number (X ranging from $0000 to $01FF), and have the value $FF to indcate that the level does<br>"
+		Output2 += ";not use MBCM16, it is very possible that you may have levels that don't use MBCM16 at all, thus resulting<br>"
+		Output2 += ";lots of unused values in the table with $FF. This method makes it possible to have less than 512 entries.<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += ".LevelList<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < 512n; PlaceHolderLoopCount++) {

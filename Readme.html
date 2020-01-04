@@ -64,6 +64,25 @@ good for debugging among other things.</li>
 <h2>Insertion</h2>
 <ol>
 	<li>
+		<p>Freerams and tables:</p>
+		<ol>
+			<li>
+				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
+				<ul>
+					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p></li>
+					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd></p></li>
+				</ul>
+				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>). You may have to come back,
+				edit the tables, and re-insert the blocks and uberasm tool as you edit levels. Comments should fully explained how each table correspond.
+				Even better is that the JS tool (linked previously) also print out the tables (with comments pointing of each item and their flag numbers/Level ID) for you
+				to copy.</p>
+				
+				<li><p>Open <kbd>FlagMemoryDefines/Defines.asm</kbd> and edit <kbd>!Freeram_MemoryFlag</kbd> if you find RAM conflicts with another ASM resource. I highly
+				recommend make note as (including before and after) you insert any patches (including third party) so it is easier to keep track of.</p></li>
+			</li>
+		</ol>
+	</li>
+	<li>
 		Using SRAM/BWRAM plus patch.
 		<ol>
 			<li>
@@ -73,65 +92,7 @@ sram_table:	dl $7E1EA2 : dw $008D
 		dl $xxxxxx : dw &lt;size&gt;
 </pre></td></tr></table>
 				<kbd>$xxxxxx</kbd> is the RAM address <kbd>!Freeram_MemoryFlag</kbd>, and <kbd>&lt;size&gt;</kbd> is the number of bytes it consume (<kbd>NumberOfGroup128*$10</kbd>, default example: 32 bytes for 2 group-128s). Then add
-				the default values (still using the example of 32 bytes):
-<table><tr><td><pre>
-sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00,$00,$00,$00
-		db $00,$00,$00,$00,$00
-		
-		;Memory-based CM16 default values:
-		;   76543210
-		db %11111111 ;>!Freeram_MemoryFlag+$00 (flags $00-$07)
-		db %11111111 ;>!Freeram_MemoryFlag+$01 (flags $08-$0F)
-		db %11111111 ;>!Freeram_MemoryFlag+$02 (flags $10-$17)
-		db %11111111 ;>!Freeram_MemoryFlag+$03 (flags $18-$1F)
-		db %11111111 ;>!Freeram_MemoryFlag+$04 (flags $20-$27)
-		db %11111111 ;>!Freeram_MemoryFlag+$05 (flags $28-$2F)
-		db %11111111 ;>!Freeram_MemoryFlag+$06 (flags $30-$37)
-		db %11111111 ;>!Freeram_MemoryFlag+$07 (flags $38-$3F)
-		db %11111111 ;>!Freeram_MemoryFlag+$08 (flags $40-$47)
-		db %11111111 ;>!Freeram_MemoryFlag+$09 (flags $48-$4F)
-		db %11111111 ;>!Freeram_MemoryFlag+$0A (flags $50-$57)
-		db %11111111 ;>!Freeram_MemoryFlag+$0B (flags $58-$5F)
-		db %11111111 ;>!Freeram_MemoryFlag+$0C (flags $60-$67)
-		db %11111111 ;>!Freeram_MemoryFlag+$0D (flags $68-$6F)
-		db %11111111 ;>!Freeram_MemoryFlag+$0E (flags $70-$77)
-		db %11111111 ;>!Freeram_MemoryFlag+$0F (flags $78-$7F)
-		db %11111111 ;>!Freeram_MemoryFlag+$10 (flags $80-$87)
-		db %11111111 ;>!Freeram_MemoryFlag+$11 (flags $88-$8F)
-		db %11111111 ;>!Freeram_MemoryFlag+$12 (flags $90-$97)
-		db %11111111 ;>!Freeram_MemoryFlag+$13 (flags $98-$9F)
-		db %11111111 ;>!Freeram_MemoryFlag+$14 (flags $A0-$A7)
-		db %11111111 ;>!Freeram_MemoryFlag+$15 (flags $A8-$AF)
-		db %11111111 ;>!Freeram_MemoryFlag+$16 (flags $B0-$B7)
-		db %11111111 ;>!Freeram_MemoryFlag+$17 (flags $B8-$BF)
-		db %11111111 ;>!Freeram_MemoryFlag+$18 (flags $C0-$C7)
-		db %11111111 ;>!Freeram_MemoryFlag+$19 (flags $C8-$CF)
-		db %11111111 ;>!Freeram_MemoryFlag+$1A (flags $D0-$D7)
-		db %11111111 ;>!Freeram_MemoryFlag+$1B (flags $D8-$DF)
-		db %11111111 ;>!Freeram_MemoryFlag+$1C (flags $E0-$E7)
-		db %11111111 ;>!Freeram_MemoryFlag+$1D (flags $E8-$EF)
-		db %11111111 ;>!Freeram_MemoryFlag+$1E (flags $F0-$F7)
-		db %11111111 ;>!Freeram_MemoryFlag+$1F (flags $F8-$FF)
-		;Here, make sure the number of bytes (db means direct byte)
-		;matches the intended number of bytes you plan on inserting
-		;in your hack.
-</pre></td></tr></table>
+				the default values (still using the example of 32 bytes).<br><br>
 				Remember that the order in table and defaults must match. Remember that this is the default value they would be when you start a new game.
 				Keep in mind about LM's CM16:
 				<ul>
@@ -151,23 +112,6 @@ sram_defaults:	db $00,$00,$00,$00,$00,$00,$00,$00
 				</ul>
 				Thus, you are not restricted to using all eight ones or all eight zeroes in the bytes.</p>
 				
-			</li>
-		</ol>
-	</li>
-	<li>
-		<p>Freerams and tables:</p>
-		<ol>
-			<li>
-				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
-				<ul>
-					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p></li>
-					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd></p></li>
-				</ul>
-				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>). You may have to come back,
-				edit the tables, and re-insert the blocks and uberasm tool as you edit levels. Comments should fully explained how each table correspond.</p>
-				
-				<li><p>Open <kbd>FlagMemoryDefines/Defines.asm</kbd> and edit <kbd>!Freeram_MemoryFlag</kbd> if you find RAM conflicts with another ASM resource. I highly
-				recommend make note as you insert any patches (including third party) so it is easier to keep track of.</p></li>
 			</li>
 		</ol>
 	</li>
