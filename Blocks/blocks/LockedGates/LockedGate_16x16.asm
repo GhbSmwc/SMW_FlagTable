@@ -60,6 +60,7 @@ MarioCape:
 MarioFireball:
 	RTL
 	DonePullX:
+	SEP #$30
 	PLX
 	RTL
 
