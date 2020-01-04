@@ -19,6 +19,7 @@
 ;  assigned to what key counter.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	PHX							;>This is needed if you are going to have sprites interacting with this block.
+	PHY
 	PHB							;>Preserve bank
 	PHK							;\Adjust bank for any $xxxx,y
 	PLB							;/
@@ -44,6 +45,7 @@
 	++
 	SEP #$30
 	PLB							;>Restore bank.
+	PLY
 	PLX							;>Restore potential sprite index.
 	RTL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -22,6 +22,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ; at a location that isn't assigned.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	PHX							;>This is needed if you are going to have sprites interacting with this block.
+	PHY
 	PHB							;>Preserve bank
 	PHK							;\Adjust bank for any $xxxx,y
 	PLB							;/
@@ -49,6 +50,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	TXA							;>Transfer indexCount*2 to A
 	SEP #$30
 	PLB							;>Restore bank.
+	PLY
 	PLX							;>Restore potential sprite index.
 	RTL
 	
@@ -60,7 +62,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ?GetFlagNumberLevelIndexStart:
 	dw $0105		;>Flag $0 -> LM's CM16 $0
-	dw $FFFF		;>Flag $1 -> LM's CM16 $1
+	dw $0105		;>Flag $1 -> LM's CM16 $1
 	dw $FFFF		;>Flag $2 -> LM's CM16 $2
 	dw $FFFF		;>Flag $3 -> LM's CM16 $3
 	dw $FFFF		;>Flag $4 -> LM's CM16 $4
@@ -595,7 +597,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ?GetFlagNumberC800IndexStart:
 	dw GetC800IndexHorizLvl($01B0, $0002, $0016)		;>Flag $0 -> LM's CM16 $0
-	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $1 -> LM's CM16 $1
+	dw GetC800IndexHorizLvl($01B0, $0006, $0016)		;>Flag $1 -> LM's CM16 $1
 	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $2 -> LM's CM16 $2
 	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $3 -> LM's CM16 $3
 	dw GetC800IndexHorizLvl($01B0, $0000, $0000)		;>Flag $4 -> LM's CM16 $4

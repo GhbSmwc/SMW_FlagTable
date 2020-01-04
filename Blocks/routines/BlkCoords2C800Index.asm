@@ -55,6 +55,7 @@
 
 ;GetLevelMap16IndexByMap16Position:
 	;Check level format
+	PHY
 	LDA $5B
 	LSR
 	BCS .VerticalLevel
@@ -126,10 +127,12 @@
 	STA $00					;>Output
 	SEP #$20
 	CLC
+	PLY
 	RTL
 	
 	.Invalid
 	SEP #$21
+	PLY
 	RTL
 	
 	.VerticalLevel
@@ -172,10 +175,12 @@
 	STA $00					;>$00 is %00YYYYYX yyyyxxxx
 	SEP #$20
 	CLC
+	PLY
 	RTL
 	
 	.Invalid1
 	SEP #$21
+	PLY
 	RTL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 16bit * 16bit unsigned Multiplication

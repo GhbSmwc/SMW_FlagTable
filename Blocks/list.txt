@@ -1,1 +1,2 @@
 500:025 CollectibleKey.asm
+501:130 LockedGates/LockedGate_16x16.asm

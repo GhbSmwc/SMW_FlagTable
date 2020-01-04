@@ -101,7 +101,7 @@
 		Output += "</tr>"
 		Output += "<tr>"
 		Output += "<td><kbd>!Freeram_KeyCounter</kbd> range</td>"
-		Output += "<td><kbd>$" + KeyCounterRAM.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (KeyCounterRAM+(NumberOfKeyCounters-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>" + NumberOfKeyCounters.toString(10) + "</kbd> bytes)</td>"
+		Output += "<td><kbd>$" + KeyCounterRAM.toString(16).toUpperCase() + "</kbd> to <kbd>$" + (KeyCounterRAM+(NumberOfKeyCounters-1n)).toString(16).toUpperCase() + "</kbd> (<kbd>!Freeram_KeyCounter</kbd> to <kbd>!Freeram_KeyCounter+$" + (NumberOfKeyCounters-1n).toString(16).toUpperCase() + "</kbd>), <kbd>" + NumberOfKeyCounters.toString(10) + "</kbd> bytes)</td>"
 		Output += "</tr>"
 		Output += "</table><br>"
 		if (NumberOfGroup128 >= 2n) {

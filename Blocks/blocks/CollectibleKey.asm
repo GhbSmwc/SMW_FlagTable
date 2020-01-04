@@ -13,7 +13,6 @@ MarioSide:
 TopCorner:
 BodyInside:
 HeadInside:
-	PHY
 	if !Settings_MBCM16_KeyHitboxSize != 0
 		;MushroomHitbox:
 		;.MarioCollision
@@ -50,6 +49,7 @@ HeadInside:
 		JSL $03B72B					;>Check collision
 		BCC Done
 	endif
+;Set flags to not respawn.
 	REP #$20
 	LDA $9A				;\BlockXPos = floor(PixelXPos/16)
 	LSR #4				;|
@@ -67,9 +67,8 @@ HeadInside:
 	SEP #$20
 	CLC
 	%WriteBlockFlagIndex()
-	
-	
-	%GetWhatKeyCounter()					;>Get what counter
+;Code here
+	%GetWhatKeyCounter()					;>Get what counter based on what level.
 	BCS Done						;>Return if level not marked
 	TAX							;>Transfer to X.
 	LDA !Freeram_KeyCounter,x				;>Key counter
@@ -77,12 +76,11 @@ HeadInside:
 	BCS Done						;/
 	INC A							;\Increment key counter.
 	STA !Freeram_KeyCounter,x				;/
-	LDA #!Settings_MBCM16_SoundNum				;\SFX
-	STA !Settings_MBCM16_SoundRAM				;/
+	LDA #!Settings_MBCM16_Key_SoundNum			;\SFX
+	STA !Settings_MBCM16_Key_SoundRAM			;/
 	%erase_block()						;>Key disappears.
 
 	Done:
-	PLY
 	SEP #$30
 
 ;WallFeet:	; when using db $37

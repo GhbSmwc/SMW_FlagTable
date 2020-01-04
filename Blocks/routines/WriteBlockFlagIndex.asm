@@ -15,6 +15,7 @@
 ;
 ;Edited to work with my FlagMemory blocks.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	PHY
 	PHA			;>A as input preserved.
 	AND.b #%00000111	;>WhatBit = Bitnumber MOD 8
 	TAY			;>Place in Y.
@@ -28,12 +29,14 @@
 	EOR.b #%11111111
 	AND !Freeram_MemoryFlag,x
 	STA !Freeram_MemoryFlag,x
+	PLY
 	RTL
 	
 	?SetBit
 	LDA ?BitSelectTable,y
 	ORA !Freeram_MemoryFlag,x
 	STA !Freeram_MemoryFlag,x
+	PLY
 	RTL
 	
 	?BitSelectTable:

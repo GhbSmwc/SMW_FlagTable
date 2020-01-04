@@ -73,8 +73,9 @@ good for debugging among other things.</li>
 				<ul>
 					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p></li>
 					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd></p></li>
+					<li><p><kbd>Blocks/routines/GetWhatKeyCounter</kbd></p></li>
 				</ul>
-				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>). You may have to come back,
+				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>), and what key counter for the level to use. You may have to come back,
 				edit the tables, and re-insert the blocks and uberasm tool as you edit levels. Comments should fully explained how each table correspond.
 				Even better is that the JS tool (linked previously) also print out the tables (with comments pointing of each item and their flag numbers/Level ID) for you
 				to copy.</p>
@@ -182,7 +183,7 @@ good for debugging among other things.</li>
 	<li>
 		You may be asking the question, why does the game lag if the player touches these MBCM16 blocks when they fail to trigger? This is because every frame the player touches the block, it has
 		to search a long list of flag numbers (and fail to find the matching entry), which tanks the game's performance. The longer the list, the harder the game will slow down. However, if your
-		entire hack does not contain any non-listed MBCM16 blocks (which you should), you shouldn't worry, since the blocks should execute for only 1 frame for a listed MBCM16 block the moment the
-		block disappears.
+		entire hack does not contain any non-listed MBCM16 blocks (which your hack should have all of them be listed), you shouldn't worry, since the blocks execute for only 1 frame for a listed
+		MBCM16 block the moment the block disappears.
 	</li>
 </ul>

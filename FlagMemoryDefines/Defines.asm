@@ -88,6 +88,11 @@ endif
  ; 1 = 16x16 Sprite-styled hitbox (actually its hitbox is 12x10, used by
  ;     most powerup sprites).
  
- !Settings_MBCM16_SoundRAM = $1DFC|!addr
- !Settings_MBCM16_SoundNum = $15
+ !Settings_MBCM16_Key_SoundRAM = $1DFC|!addr
+ !Settings_MBCM16_Key_SoundNum = $15
  ;^What sound to play with picking up the key.
+
+;Locked Gate:
+ !Settings_MBCM16_LockedGate_SoundRAM = $1DF9|!addr
+ !Settings_MBCM16_LockedGate_SoundNum = $2A
+ ;^What sound to play when unlocking a gate.
