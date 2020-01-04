@@ -40,12 +40,21 @@ HeadInside:
 	CLC
 	%WriteBlockFlagIndex()
 ;Code here
-	PLX
+	PLX							;>Reobtain key counter index.
 	LDA !Freeram_KeyCounter,x				;\Decrement key counter
 	DEC A							;|
 	STA !Freeram_KeyCounter,x				;/
-	%erase_block()						;>Delete block
-	%create_smoke()						;>smoke
+	if !Settings_MBCM16_LockedGate_16x16_TileToTurnTo == $0025
+		%erase_block()						;>Delete block
+	else
+		REP #$10
+		LDX #!Settings_MBCM16_LockedGate_16x16_TileToTurnTo
+		%change_map16()
+		SEP #$10
+	endif
+	if !Settings_MBCM16_LockedGate_GenerateSmoke != 0
+		%create_smoke()						;>smoke
+	endif
 	LDY #$00						;\Don't be solid the frame the player
 	LDA #$25						;|makes this block disappear.
 	STA $1693|!addr						;/

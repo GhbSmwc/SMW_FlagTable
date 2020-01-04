@@ -4,6 +4,7 @@
 ;in level:
 ;	load:
 ;	JSL MBM16WriteTo7FC060_LoadFlagTableToCM16
+;	JSL MBCM16DisplayKeyCounter_DisplayHud
 ;	;[...]
 ;	RTL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

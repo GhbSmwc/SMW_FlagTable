@@ -49,6 +49,13 @@ HeadInside:
 		JSL $03B72B					;>Check collision
 		BCC Done
 	endif
+;don't do anything should you have 99 keys.
+	%GetWhatKeyCounter()					;>Get what counter based on what level.
+	BCS Done						;>Return if level not marked
+	TAX							;>Transfer to X.
+	LDA !Freeram_KeyCounter,x				;>Key counter
+	CMP.b #99						;\If 99+, don't increment.
+	BCS Done						;/
 ;Set flags to not respawn.
 	REP #$20
 	LDA $9A				;\BlockXPos = floor(PixelXPos/16)
@@ -72,8 +79,6 @@ HeadInside:
 	BCS Done						;>Return if level not marked
 	TAX							;>Transfer to X.
 	LDA !Freeram_KeyCounter,x				;>Key counter
-	CMP.b #99						;\If 99+, don't increment.
-	BCS Done						;/
 	INC A							;\Increment key counter.
 	STA !Freeram_KeyCounter,x				;/
 	LDA #!Settings_MBCM16_Key_SoundNum			;\SFX
@@ -91,6 +96,6 @@ SpriteH:
 
 MarioCape:
 MarioFireball:
-RTL
+	RTL
 
 print "A collectible key."

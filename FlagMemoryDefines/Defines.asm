@@ -81,18 +81,47 @@ endif
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Settings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;Collectible key:
- !Settings_MBCM16_KeyHitboxSize = 1
- ;^hitbox size:
- ; 0 = Full 16x16 block
- ; 1 = 16x16 Sprite-styled hitbox (actually its hitbox is 12x10, used by
- ;     most powerup sprites).
+;Custom blocks:
+ ;Collectible key:
+  !Settings_MBCM16_KeyHitboxSize = 1
+   ;^hitbox size:
+   ; 0 = Full 16x16 block
+   ; 1 = 16x16 Sprite-styled hitbox (actually its hitbox is 12x10, used by
+   ;     most powerup sprites).
+  
+   ;What sound to play with picking up the key.
+    !Settings_MBCM16_Key_SoundRAM = $1DFC|!addr
+    !Settings_MBCM16_Key_SoundNum = $15
  
- !Settings_MBCM16_Key_SoundRAM = $1DFC|!addr
- !Settings_MBCM16_Key_SoundNum = $15
- ;^What sound to play with picking up the key.
+ ;Locked Gates:
+  ;What sound to play when unlocking a gate:
+   !Settings_MBCM16_LockedGate_SoundRAM = $1DF9|!addr
+   !Settings_MBCM16_LockedGate_SoundNum = $2A
+  
+  !Settings_MBCM16_LockedGate_GenerateSmoke = 1
+   ;^Generate smoke: 0 = no, 1 = yes.
+  ;Tiles to turn into when unlocking gates.
+   !Settings_MBCM16_LockedGate_16x16_TileToTurnTo = $0025
 
-;Locked Gate:
- !Settings_MBCM16_LockedGate_SoundRAM = $1DF9|!addr
- !Settings_MBCM16_LockedGate_SoundNum = $2A
- ;^What sound to play when unlocking a gate.
+;HUD stuff:
+ !EditTileProps = 1
+  ;^0 = no (use if you are using SMW's vanilla status bar).
+  ; 1 = yes.
+ !StatusBarFormat = $02
+  ;^Number of grouped bytes per 8x8 tile for the status bar (not the overworld border):
+  ; $01 = each 8x8 tile have two bytes each separated into "tile numbers" and "tile properties" group;
+  ;       Minimalist/SMB3 [TTTTTTTT, TTTTTTTT]...[YXPCCCTT, YXPCCCTT] or SMW's default ([TTTTTTTT] only).
+  ; $02 = each 8x8 tile byte have two bytes located next to each other;
+  ;       Super status bar/Overworld border plus [TTTTTTTT YXPCCCTT, TTTTTTTT YXPCCCTT]...
+ ;Status bar position:
+  !Settings_MBCM16_KeyCounterTileNumbPos = $7FA132
+  !Settings_MBCM16_KeyCounterTilePropPos = $7FA133
+ ;Static tiles:
+  !Settings_MBCM16_KeyCounterBlankTileNumb = $FC
+  !Settings_MBCM16_KeyCounterBlankTileProp = %00111000
+  !Settings_MBCM16_KeyCounterKeySymbolTileNumb = $4E
+  !Settings_MBCM16_KeyCounterKeySymbolTileProp = %00111100
+  !Settings_MBCM16_KeyCounterXSymbolTileNumb = $26
+  !Settings_MBCM16_KeyCounterXSymbolTileProp = %00111000
+  
+  
