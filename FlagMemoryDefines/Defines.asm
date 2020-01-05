@@ -100,7 +100,9 @@ endif
   
   !Settings_MBCM16_LockedGate_GenerateSmoke = 1
    ;^Generate smoke: 0 = no, 1 = yes.
-  ;Tiles to turn into when unlocking gates.
+  ;Tiles to turn into when unlocking gates. Note that if you want it to transform into a non tile-$25,
+  ;you would checked the "Always show objects", and the tile numbers they transform into is their own
+  ;tile number plus $0100.
    ;16x16 block:
     !Settings_MBCM16_LockedGate_16x16_TileToTurnTo = $0025
    ;16x32 block:
@@ -110,7 +112,13 @@ endif
     !Settings_MBCM16_LockedGate_16x48_Top_TileToTurnTo = $0025
     !Settings_MBCM16_LockedGate_16x48_Middle_TileToTurnTo = $0025
     !Settings_MBCM16_LockedGate_16x48_Bottom_TileToTurnTo = $0025
-
+   ;32x16 block:
+    !Settings_MBCM16_LockedGate_32x16_Left_TileToTurnTo = $0025
+    !Settings_MBCM16_LockedGate_32x16_Right_TileToTurnTo = $0025
+   ;48x16 block:
+    !Settings_MBCM16_LockedGate_48x16_Left_TileToTurnTo = $0025
+    !Settings_MBCM16_LockedGate_48x16_Middle_TileToTurnTo = $0025
+    !Settings_MBCM16_LockedGate_48x16_Right_TileToTurnTo = $0025
 ;HUD stuff:
  !EditTileProps = 1
   ;^0 = no (use if you are using SMW's vanilla status bar).

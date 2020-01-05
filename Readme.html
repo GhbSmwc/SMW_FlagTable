@@ -71,9 +71,10 @@ good for debugging among other things.</li>
 			<li>
 				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
 				<ul>
-					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p></li>
-					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd></p></li>
-					<li><p><kbd>Blocks/routines/GetWhatKeyCounter</kbd></p></li>
+					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>, this determines what group-128 to use for each level using the MBCM16.</p></li>
+					<li><p><kbd>UberasmTool/Library/MBCM16DisplayKeyCounter</kbd>, this displays the key counter on the heads-up display (HUD) of how many keys of a particular area</p></li>
+					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd>, blocks' routine to find out what flag they are.</p></li>
+					<li><p><kbd>Blocks/routines/GetWhatKeyCounter</kbd>, blocks' routine to find what key to use.</p></li>
 				</ul>
 				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>), and what key counter for the level to use. You may have to come back,
 				edit the tables, and re-insert the blocks and uberasm tool as you edit levels. Comments should fully explained how each table correspond.
