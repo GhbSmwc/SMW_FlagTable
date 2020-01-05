@@ -15,28 +15,33 @@
 ;
 ;Edited to work with my FlagMemory blocks.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	PHY
-	PHA			;>A as input preserved.
-	AND.b #%00000111	;>WhatBit = Bitnumber MOD 8
-	TAY			;>Place in Y.
-	PLA			;>Restore what was originally in the input.
-	LSR #3			;>ByteNumber = floor(Bitnumber/8)
-	TAX			;>Place in X.
+	PHB				;>Preserve bank
+	PHK				;\Switch to current bank
+	PLB				;/
+	PHY				;>Preserve Y
+	PHA				;>A as input preserved.
+	AND.b #%00000111		;>WhatBit = Bitnumber MOD 8
+	TAY				;>Place in Y.
+	PLA				;>Restore what was originally in the input.
+	LSR #3				;>ByteNumber = floor(Bitnumber/8)
+	TAX				;>Place in X.
 	BCS ?SetBit
 	
 	;ClearBit
-	LDA ?BitSelectTable,y
-	EOR.b #%11111111
-	AND !Freeram_MemoryFlag,x
-	STA !Freeram_MemoryFlag,x
-	PLY
-	RTL
+	LDA ?BitSelectTable,y		;\Force bit to be 0
+	EOR.b #%11111111		;|
+	AND !Freeram_MemoryFlag,x	;|
+	STA !Freeram_MemoryFlag,x	;|
+	BRA ?Done			;/
 	
 	?SetBit
-	LDA ?BitSelectTable,y
-	ORA !Freeram_MemoryFlag,x
-	STA !Freeram_MemoryFlag,x
-	PLY
+	LDA ?BitSelectTable,y		;\Force bit to be 1
+	ORA !Freeram_MemoryFlag,x	;|
+	STA !Freeram_MemoryFlag,x	;/
+	
+	?Done:
+	PLY			;>Restore Y
+	PLB			;>Restore bank
 	RTL
 	
 	?BitSelectTable:
