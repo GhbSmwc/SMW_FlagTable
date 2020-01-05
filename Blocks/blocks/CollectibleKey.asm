@@ -74,13 +74,13 @@ HeadInside:
 	SEP #$20
 	CLC
 	%WriteBlockFlagIndex()
-;Code here
 	%GetWhatKeyCounter()					;>Get what counter based on what level.
 	BCS Done						;>Return if level not marked
 	TAX							;>Transfer to X.
 	LDA !Freeram_KeyCounter,x				;>Key counter
 	INC A							;\Increment key counter.
 	STA !Freeram_KeyCounter,x				;/
+;Code here
 	LDA #!Settings_MBCM16_Key_SoundNum			;\SFX
 	STA !Settings_MBCM16_Key_SoundRAM			;/
 	%erase_block()						;>Key disappears.

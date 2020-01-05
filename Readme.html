@@ -148,7 +148,45 @@ good for debugging among other things.</li>
 			Graphics
 		</li>
 		<li>
-			Placing blocks in level
+			Placing blocks in the level
+			<ol>
+				<li>
+					<p>Every time you place blocks in the level, you have to assign them to their respective flags, this involves
+					the frequent editing of <kbd>SearchBlockFlagIndex.asm</kbd>. While finding the level numbers and what layer
+					they're on is easy, the block coordinate is displayed LM's status bar on the bottom-left corner:<br>
+					<img src="Readme_files/LM_BlockCoords.png"><br>
+					Use the X and Y coordinate for the table <kbd>?GetFlagNumberC800IndexStart:</kbd>. If involving multi-blocks,
+					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block coordinate.</p>
+				</li>
+				<li>
+					<p>Also every time you place these memorized blocks, is that you must select them (all within the group if
+					multi-blocks like the locked gates), then give them their conditional map16 flags by <kbd>Menubar</kbd> &rightarrow;
+					<kbd>Edit</kbd> &rightarrow; <kbd>Conditional Direct Map16...</kbd>, otherwise they'll keep reappearing every level
+					load.</p>
+					
+					<p>What LMCM16 flag number you should put down is the flag number of <kbd>!Freeram_MemoryFlag</kbd>, MOD 128. For example:<br>
+					<table>
+					<tr><th>Flag number of <kbd>!Freeram_MemoryFlag</kbd></th><th>LM's flag number</th></tr>
+					<tr><td>$000</td><td>$00</td></tr>
+					<tr><td>$001</td><td>$01</td></tr>
+					<tr><td>$002</td><td>$02</td></tr>
+					<tr><td>...</td><td>...</td></tr>
+					<tr><td>$07E</td><td>$7E</td></tr>
+					<tr><td>$07F</td><td>$7F</td></tr>
+					<tr><td>$080</td><td>$00</td></tr>
+					<tr><td>$081</td><td>$01</td></tr>
+					<tr><td>$082</td><td>$02</td></tr>
+					<tr><td>...</td><td>...</td></tr>
+					<tr><td>$0FE</td><td>$7E</td></tr>
+					<tr><td>$0FF</td><td>$7F</td></tr>
+					<tr><td>$100</td><td>$00</td></tr>
+					<tr><td>$101</td><td>$01</td></tr>
+					<tr><td>$102</td><td>$02</td></tr>
+					</table><br>
+					Also remember that up to 128 different flag numbers can be used per level, this means, for example if you end up with one level
+					using 128 flag numbers (<kbd>$00-$7F</kbd>), you'll need to use another level to use additional flags.</p>
+				</li>
+			</ol>
 		</li>
 	</ol>
 </ol>

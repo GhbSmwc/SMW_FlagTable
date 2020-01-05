@@ -101,7 +101,11 @@ endif
   !Settings_MBCM16_LockedGate_GenerateSmoke = 1
    ;^Generate smoke: 0 = no, 1 = yes.
   ;Tiles to turn into when unlocking gates.
-   !Settings_MBCM16_LockedGate_16x16_TileToTurnTo = $0025
+   ;16x16 block:
+    !Settings_MBCM16_LockedGate_16x16_TileToTurnTo = $0025
+   ;16x32 block
+    !Settings_MBCM16_LockedGate_16x32_Top_TileToTurnTo = $0025
+    !Settings_MBCM16_LockedGate_16x32_Bottom_TileToTurnTo = $0025
 
 ;HUD stuff:
  !EditTileProps = 1

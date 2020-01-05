@@ -1,4 +1,5 @@
 ;Act as $0130.
+;This is the top of the 16x32 pixel block gate.
 
 db $42 ; or db $37
 JMP MarioBelow : JMP MarioAbove : JMP MarioSide
@@ -44,22 +45,39 @@ HeadInside:
 	DEC A							;|
 	STA !Freeram_KeyCounter,x				;/
 ;Code here
-	if !Settings_MBCM16_LockedGate_16x16_TileToTurnTo == $0025
-		%erase_block()						;>Delete block
-	else
-		REP #$10
-		LDX #!Settings_MBCM16_LockedGate_16x16_TileToTurnTo
-		%change_map16()
-		SEP #$10
-	endif
-	if !Settings_MBCM16_LockedGate_GenerateSmoke != 0
-		%create_smoke()						;>smoke
-	endif
 	LDY #$00						;\Don't be solid the frame the player
 	LDA #$25						;|makes this block disappear.
 	STA $1693|!addr						;/
 	LDA #!Settings_MBCM16_LockedGate_SoundNum		;\SFX
 	STA !Settings_MBCM16_LockedGate_SoundRAM		;/
+	REP #$10						;\Change top block
+	LDX #!Settings_MBCM16_LockedGate_16x32_Top_TileToTurnTo	;|
+	%change_map16()						;|
+	SEP #$10						;|
+	%swap_XY()						;/
+	if !Settings_MBCM16_LockedGate_GenerateSmoke != 0
+		%create_smoke()						;>smoke
+	endif
+	REP #$20						;\Preserve collision point Y position
+	LDA $98							;|(in case it messes up other collision points and other things)
+	PHA							;/
+	CLC							;\1 full block downward
+	ADC #$0010						;|
+	STA $98							;/
+	SEP #$20
+	if !Settings_MBCM16_LockedGate_GenerateSmoke != 0
+		%create_smoke()						;>smoke
+	endif
+	
+	REP #$10							;\Change bottom block
+	LDX #!Settings_MBCM16_LockedGate_16x32_Bottom_TileToTurnTo	;|
+	%change_map16()							;|
+	SEP #$10							;/
+	
+	REP #$20						
+	PLA							;\Restore collision point Y position
+	STA $98							;/
+	SEP #$20						;
 ;Done
 	Done:
 SpriteV:
@@ -72,5 +90,9 @@ MarioFireball:
 	SEP #$30
 	PLX
 	RTL
+	
+	Map16TurnInto:
+	dw !Settings_MBCM16_LockedGate_16x32_Top_TileToTurnTo
+	dw !Settings_MBCM16_LockedGate_16x32_Bottom_TileToTurnTo
 
-print "A solid locked gate that opens when the player have a matching key."
+print "A solid 16x32 top block locked gate that opens when the player have a matching key."
