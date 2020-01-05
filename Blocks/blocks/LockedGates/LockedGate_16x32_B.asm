@@ -95,9 +95,5 @@ MarioFireball:
 	SEP #$30
 	PLX
 	RTL
-	
-	Map16TurnInto:
-	dw !Settings_MBCM16_LockedGate_16x32_Top_TileToTurnTo
-	dw !Settings_MBCM16_LockedGate_16x32_Bottom_TileToTurnTo
 
-print "A solid 16x32 top block locked gate that opens when the player have a matching key."
+print "A solid 16x32 bottom block locked gate that opens when the player have a matching key."

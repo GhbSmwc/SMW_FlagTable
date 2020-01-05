@@ -103,9 +103,13 @@ endif
   ;Tiles to turn into when unlocking gates.
    ;16x16 block:
     !Settings_MBCM16_LockedGate_16x16_TileToTurnTo = $0025
-   ;16x32 block
+   ;16x32 block:
     !Settings_MBCM16_LockedGate_16x32_Top_TileToTurnTo = $0025
     !Settings_MBCM16_LockedGate_16x32_Bottom_TileToTurnTo = $0025
+   ;16x48 block:
+    !Settings_MBCM16_LockedGate_16x48_Top_TileToTurnTo = $0025
+    !Settings_MBCM16_LockedGate_16x48_Middle_TileToTurnTo = $0025
+    !Settings_MBCM16_LockedGate_16x48_Bottom_TileToTurnTo = $0025
 
 ;HUD stuff:
  !EditTileProps = 1
