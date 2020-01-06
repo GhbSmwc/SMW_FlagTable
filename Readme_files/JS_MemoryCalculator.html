@@ -20,10 +20,12 @@
 	<body onload="Calculate()">
 	<a href="../Readme.html#MemoryCalculator">Back</a><br><br>
 	
-	Note: This javascript calculator uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt"><kbd>BigInt</kbd></a> as its number format. Make sure your
+	<p>Note: This javascript calculator uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt"><kbd>BigInt</kbd></a> as its number format. Make sure your
 	browser supports this format. Currently (the time of writing 2019-12-29), edge, IE (why use this browser?), safari (and IOS) don't support this format. The reason is because to prevent a potential
 	rounding issues with the precision, <kbd>Math.floor(x/y)</kbd> could have the quotient be rounded up before the floor function kicks in). An example is this: <kbd>Math.floor(100000000000000.9999)</kbd>,
-	its between <kbd>100000000000000</kbd> and <kbd>100000000000001</kbd>, however, it is rounded towards <kbd>100000000000001</kbd> and not <kbd>100000000000000</kbd>, which is wrong.<br><br>
+	its between <kbd>100000000000000</kbd> and <kbd>100000000000001</kbd>, however, it is rounded towards <kbd>100000000000001</kbd> and not <kbd>100000000000000</kbd>, which is wrong.<p>
+	
+	<p>Another note: Google chrome browser seems to struggle to render this page with huge tables, firefox seems fine when handling this.</p>
 	
 	<kbd>!Freeram_MemoryFlagRAM = </kbd>$<input type="text" onchange="Calculate()" value="7FAD49" id="Freeram_MemoryFlagRAM" list="MemoryFlagRAMTables"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_MemoryFlagRAM', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_MemoryFlagRAM', 0n, BigInt('0xFFFFFF')) ">-</button>
 	<datalist id="MemoryFlagRAMTables">
@@ -36,7 +38,7 @@
 	<option value="7FAD79">Default RAM address</option>
 	<option value="4001E9">Default RAM address (SA-1)</option>
 	</datalist><br>
-	Number of separate key counters = <input type="number" onchange="Calculate()" value="2" min="1" max="255" id="NumberOfKeyCounters"><br>
+	Number of separate key counters = <input type="number" onchange="Calculate()" value="2" min="1" max="256" id="NumberOfKeyCounters"><br>
 	
 	<button onclick="reset()">Reset</button><br>
 	<hr>
@@ -70,7 +72,7 @@
 		var KeyCounterRAM = BigintClamp(CorrectHexBigIntValue(document.getElementById("Freeram_KeyCounter").value), 0n, BigInt("0xFFFFFF"))
 		document.getElementById("Freeram_KeyCounter").value = KeyCounterRAM.toString(16).toUpperCase()
 		
-		var NumberOfKeyCounters = BigintClamp(BigInt(document.getElementById("NumberOfKeyCounters").value), 1n, 255n)
+		var NumberOfKeyCounters = BigintClamp(BigInt(document.getElementById("NumberOfKeyCounters").value), 1n, 256n)
 		document.getElementById("NumberOfKeyCounters").value = NumberOfKeyCounters.toString(10)
 		
 		var NumberOfBytesOfMemoryFlagRAM = NumberOfGroup128*16n
