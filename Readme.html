@@ -72,7 +72,7 @@ good for debugging among other things.</li>
 				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
 				<ul>
 					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>, this determines what group-128 to use for each level using the MBCM16.</p></li>
-					<li><p><kbd>UberasmTool/Library/MBCM16DisplayKeyCounter</kbd>, this displays the key counter on the heads-up display (HUD) of how many keys of a particular area</p></li>
+					<li><p><kbd>UberasmTool/Library/MBCM16DisplayKeyCounter</kbd>, this displays the key counter on the heads-up display (HUD) of how many keys of a particular area.</p></li>
 					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd>, blocks' routine to find out what flag they are.</p></li>
 					<li><p><kbd>Blocks/routines/GetWhatKeyCounter</kbd>, blocks' routine to find what key to use.</p></li>
 				</ul>
@@ -82,7 +82,8 @@ good for debugging among other things.</li>
 				to copy.</p>
 				
 				<li><p>Open <kbd>FlagMemoryDefines/Defines.asm</kbd> and edit <kbd>!Freeram_MemoryFlag</kbd> if you find RAM conflicts with another ASM resource. I highly
-				recommend make note as (including before and after) you insert any patches (including third party) so it is easier to keep track of.</p></li>
+				recommend make note as (including before and after) you insert any patches (including third party) so it is easier to keep track of. There's also other settings you
+				can play around with.</p></li>
 			</li>
 		</ol>
 	</li>
@@ -147,6 +148,28 @@ good for debugging among other things.</li>
 	<ol>
 		<li>
 			Graphics
+			<ol>
+				<li>
+					<p>Create the Exgraphics and Graphics folder by pressing &ldquo;Quick Extract GFX from ROM&rdquo; and &ldquo;Quick Extract ExGFX from ROM&rdquo;
+					(red and blue mushroom) if you haven't done so already.</p>
+				</li>
+				<li>
+					<p>Then paste these files, they should have obvious names, however, for <kbd>GFX28.bin</kbd> (status bar tiles), you can either replace the original
+					with that in the &ldquo;Graphics&rdquo; folder, or rename it <kbd>ExGFXYY</kbd> where <kbd>YY</kbd> is the hexadecimal number of what slot you
+					want to insert to (and to use it in a level, it must be on LG1). Now insert the graphics by pressing &ldquo;Quick Insert GFX and ExGFX to ROM, reload graphics&rdquo;
+					(yellow mushroom with a red left arrow).</p>
+				</li>
+			
+			</ol>
+		</li>
+		<li>
+			Map16 tiles
+			<ol>
+				<li>
+					<p>Insert the <kbd>.map16</kbd> file included in this package (located at <kbd>Blocks/Map16.map16</kbd>) using Lunar Magic's map16 editor (the button showing a
+					yellow ? block with the red left arrow). By default it should be inserted in page 5.</p>
+				</li>
+			</ol>
 		</li>
 		<li>
 			Placing blocks in the level
@@ -157,7 +180,8 @@ good for debugging among other things.</li>
 					they're on is easy, the block coordinate is displayed LM's status bar on the bottom-left corner:<br>
 					<img src="Readme_files/LM_BlockCoords.png"><br>
 					Use the X and Y coordinate for the table <kbd>?GetFlagNumberC800IndexStart:</kbd>. If involving multi-blocks,
-					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block coordinate.</p>
+					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block of the multi-blocks group:<br>
+					<a href="Readme_files/TopLeftAssignedBlock.png" target="_blank"><img src="Readme_files/TopLeftAssignedBlock.png" width="800"></a></p>
 				</li>
 				<li>
 					<p>Also every time you place these memorized blocks, is that you must select them (all within the group if
