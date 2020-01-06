@@ -33,8 +33,8 @@
 	<option value="4001B9">Default RAM address (SA-1)</option>
 	</datalist><br>
 	Number of group-128s = <input type="number" onchange="Calculate()" value="2" min="1" max="16" id="NumberOfGroup128"><br>
-	<kbd>!Freeram_KeyCounter = </kbd>$<input type="text" onchange="Calculate()" value="7FAD79" id="Freeram_KeyCounter" list="MemoryFlagRAMTables1"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_KeyCounter', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_KeyCounter', 0n, BigInt('0xFFFFFF')) ">-</button>
-	<datalist id="MemoryFlagRAMTables">
+	<kbd>!Freeram_KeyCounter = </kbd>$<input type="text" onchange="Calculate()" value="7FAD79" id="Freeram_KeyCounter" list="KeyCounters"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_KeyCounter', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_KeyCounter', 0n, BigInt('0xFFFFFF')) ">-</button>
+	<datalist id="KeyCounters">
 	<option value="7FAD79">Default RAM address</option>
 	<option value="4001E9">Default RAM address (SA-1)</option>
 	</datalist><br>
