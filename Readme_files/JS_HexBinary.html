@@ -15,6 +15,9 @@
 			span.NoLineBreak {
 				white-space: nowrap;
 			}
+			
+			input[type='text'] { font-family: monospace;}
+			
 		</style>
 	</head>
 	<a href="../Readme.html#HexBinary">Back</a><br><br>
@@ -30,7 +33,7 @@
 	</tr>
 	<tr>
 	<td>%<input type="text" onchange="EnteredBinary()" id="BinaryInput" value="00000000"></td>
-	<td rowspan="2">$<input type="text" onchange="EnteredHex()" id="HexInput" value="00"></td>
+	<td rowspan="2">$<input type="text" onchange="EnteredHex()" id="HexInput" value="00"><button onclick="ChangeInput(1)">+</button><button onclick="ChangeInput(-1)">-</button></td>
 	</tr>
 	<tr>
 	<td>
@@ -47,6 +50,12 @@
 	</table>
 	
 <script>
+	function ChangeInput(Numb) {
+		var HexNumber = clamp((parseInt(document.getElementById("HexInput").value, 16) + Numb), 0, 255)
+		document.getElementById("HexInput").value = pad(HexNumber.toString(16).toUpperCase(), 2)
+		document.getElementById("BinaryInput").value = pad(HexNumber.toString(2).toUpperCase(), 8)
+		CheckBoxOutput()
+	}
 	function EnteredHex() {
 		var HexNumber = clamp(parseInt(document.getElementById("HexInput").value, 16), 0, 255)
 		document.getElementById("HexInput").value = pad(HexNumber.toString(16).toUpperCase(), 2)
