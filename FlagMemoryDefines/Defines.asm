@@ -119,6 +119,11 @@ endif
     !Settings_MBCM16_LockedGate_48x16_Left_TileToTurnTo = $0025
     !Settings_MBCM16_LockedGate_48x16_Middle_TileToTurnTo = $0025
     !Settings_MBCM16_LockedGate_48x16_Right_TileToTurnTo = $0025
+   ;32x32 block:
+    !Settings_MBCM16_LockedGate_32x32_TopLeft = $0025
+    !Settings_MBCM16_LockedGate_32x32_TopRight = $0025
+    !Settings_MBCM16_LockedGate_32x32_BottomLeft = $0025
+    !Settings_MBCM16_LockedGate_32x32_BottomRight = $0025
 ;HUD stuff:
  !EditTileProps = 1
   ;^0 = no (use if you are using SMW's vanilla status bar).
