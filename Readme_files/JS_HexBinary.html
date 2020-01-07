@@ -79,9 +79,9 @@
 			Remainder = (Quotient % 2)
 			Quotient = Math.floor(Quotient/2)
 			if (Remainder == 0) {
-				document.getElementById("Bit" + LoopCount).checked = false
+				document.getElementById("Bit" + LoopCount.toString(10)).checked = false
 			} else {
-				document.getElementById("Bit" + LoopCount).checked = true
+				document.getElementById("Bit" + LoopCount.toString(10)).checked = true
 			}
 		}
 	}
