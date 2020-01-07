@@ -28,10 +28,11 @@ themselves cannot use <kbd>$7FC060</kbd> directly. Instead have blocks to use ba
 making it possible for custom blocks to use CM16 blocks on a SA-1 hack.</p>
 
 <p>Note that this isn't really a <b>true</b> conditional map 16 expansion, this is because this ASM resource relies on Lunar Magic's conditional map16 blocks
-(<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags <u>per level</u>. This ASM resource just creates a new RAM area defined as
-<kbd>!Freeram_MemoryFlag</kbd> and &ldquo;divide&rdquo; them into groups of 16 bytes (I call them &ldquo;Group-128&rdquo;, 16 bytes = 128 bits). Depending on what level you are in, during level load, all 16 bytes
-within a specified group (set by the table in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd> under the sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>)
-will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed when the player leaves and return.</p>
+(<kbd>$7FC060</kbd> to <kbd>$7FC06F</kbd>), therefore, you can use up to 128 flags <u>per level</u> (using within a group of 128 bits in &ldquo;<kbd>!Freeram_MemoryFlag</kbd>&rdquo;).
+This ASM resource just creates a new RAM area defined as <kbd>!Freeram_MemoryFlag</kbd> and &ldquo;divide&rdquo; them into groups of 16 bytes (I call them &ldquo;Group-128&rdquo;, 16 bytes = 128 bits).
+Depending on what level you are in, during level load, all 16 bytes within a specified group (set by the table in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd> under the
+sublabel <kbd>.OneHundredTwentyEightFlagGroupList</kbd>) will copy itself into <kbd>$7FC060</kbd>-<kbd>$7FC06F</kbd> to make the blocks spawn, not spawn anymore, or remain changed
+when the player leaves and return.</p>
 
 <p>Keep in mind, you are not forced to use a different group-128 for every level, you can reuse the same group-128 in multiple levels should the level uses less than 128 flags.
 Just be careful not to have a separate block in another level be inadvertently set the same LM flag number (which also means the same flag number for <kbd>!Freeram_MemoryFlag</kbd>)
@@ -64,6 +65,10 @@ good for debugging among other things.</li>
 <li>For debugging and dealing with bitwise values, I've provided a <a href="Readme_files/JS_HexBinary.html" id="HexBinary">simple converter</a> between hex and binary.</li>
 </ul>
 
+<h2>Before we begin...</h2>
+<p>This is the type of ASM resource that you may have to come back, edit stuff, and then re-insert periodically as you develop your hack, since this works in tandem of you creating levels. Instructions below marked with
+&ldquo;<sup><font color="yellow">[Return later]</font></sup>&rdquo; indicates you to perform these steps when re-inserting in your hack.</p>
+
 <h2>Insertion</h2>
 <ol>
 	<li>
@@ -74,13 +79,12 @@ good for debugging among other things.</li>
 				<ul>
 					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>, this determines what group-128 to use for each level using the MBCM16.</p></li>
 					<li><p><kbd>UberasmTool/Library/MBCM16DisplayKeyCounter</kbd>, this displays the key counter on the heads-up display (HUD) of how many keys of a particular area.</p></li>
-					<li><p><kbd>Blocks/routines/SearchBlockFlagIndex.asm</kbd>, blocks' routine to find out what flag they are.</p></li>
-					<li><p><kbd>Blocks/routines/GetWhatKeyCounter</kbd>, blocks' routine to find what key to use.</p></li>
+					<li><p><kbd>CustomBlocks/routines/SearchBlockFlagIndex.asm</kbd>, blocks' routine to find out what flag they are.</p></li>
+					<li><p><kbd>CustomBlocks/routines/GetWhatKeyCounter</kbd>, blocks' routine to find what key to use.</p></li>
 				</ul>
-				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>), and what key counter for the level to use. You may have to come back,
-				edit the tables, and re-insert the blocks and uberasm tool as you edit levels. Comments should fully explained how each table correspond.
-				Even better is that the JS tool (linked previously) also print out the tables (with comments pointing of each item and their flag numbers/Level ID) for you
-				to copy.</p>
+				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>), and what key counter for the level to use.
+				Comments should fully explained how each table correspond. Even better is that the JS tool (linked previously) also print out the tables (with comments
+				pointing of each item and their flag numbers/Level ID) for you to copy.</p>
 				
 				<li><p>Open <kbd>FlagMemoryDefines/Defines.asm</kbd> and edit <kbd>!Freeram_MemoryFlag</kbd> if you find RAM conflicts with another ASM resource. I highly
 				recommend make note as (including before and after) you insert any patches (including third party) so it is easier to keep track of. There's also other settings you
@@ -134,6 +138,9 @@ good for debugging among other things.</li>
 				<kbd>!Freeram_MemoryFlag+((&lt;Group_Number&gt;*$10)+$0F)</kbd>. Group number is found in <kbd>.OneHundredTwentyEightFlagGroupList</kbd>
 				in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p>
 			</li>
+			<li>
+				<sup><font color="yellow">[Return later]</font></sup>Specify what group-128 in <kbd>MBCM16WriteGroup128To7FC060.asm</kbd> should your level will use.
+			</li>
 		</ol>
 	</li>
 	<li>Block insertion</li>
@@ -143,6 +150,16 @@ good for debugging among other things.</li>
 		</li>
 		<li>
 			<p>Copy and paste the block and routine ASM files, their folders should have obvious names to know where to put.</p>
+			<ul>
+				<li>
+					<sup><font color="yellow">[Return later]</font></sup> Make sure you edit the tables in <kbd>GetWhatKeyCounter.asm</kbd> and <kbd>SearchBlockFlagIndex.asm</kbd>
+					to give it the level number, the layer it is on, its block location and what key counter the blocks should read on a given level number. You can ANY flag number
+					here if you want other blocks to disappear/appear in the other level, regardless of the group number the level is set to, unlike the limitation to a range of 128 bits.
+				</li>
+			</ul>
+		</li>
+		<li>
+			<p>Save and run GPS to insert into your game.</p>
 		</li>
 	</ol>
 	<li>LM and the CM16 flag number</li>
@@ -176,16 +193,16 @@ good for debugging among other things.</li>
 			Placing blocks in the level
 			<ol>
 				<li>
-					<p>Every time you place blocks in the level, you have to assign them to their respective flags, this involves
+					<p><sup><font color="yellow">[Return later]</font></sup> Every time you place blocks in the level, you have to assign them to their respective flags, this involves
 					the frequent editing of <kbd>SearchBlockFlagIndex.asm</kbd>. While finding the level numbers and what layer
-					they're on is easy, the block coordinate is displayed LM's status bar on the bottom-left corner:<br>
+					they're on is easy, the block coordinate is displayed LM's status bar on the bottom-left corner of what block your mouse cursor is hovering:<br>
 					<img src="Readme_files/LM_BlockCoords.png"><br>
 					Use the X and Y coordinate for the table <kbd>?GetFlagNumberC800IndexStart:</kbd>. If involving multi-blocks,
-					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block of the multi-blocks group:<br>
+					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block's coordinate of the multi-blocks group:<br>
 					<a href="Readme_files/TopLeftAssignedBlock.png" target="_blank"><img src="Readme_files/TopLeftAssignedBlock.png" width="800"></a></p>
 				</li>
 				<li>
-					<p>Also every time you place these memorized blocks, is that you must select them (all within the group if
+					<p><sup><font color="yellow">[Return later]</font></sup>Also every time you place these memorized blocks, is that you must select them (all within the group if
 					multi-blocks like the locked gates), then give them their conditional map16 flags by <kbd>Menubar</kbd> &rightarrow;
 					<kbd>Edit</kbd> &rightarrow; <kbd>Conditional Direct Map16...</kbd>, otherwise they'll keep reappearing every level
 					load.</p>
@@ -208,9 +225,16 @@ good for debugging among other things.</li>
 					<tr><td>$100</td><td>$00</td></tr>
 					<tr><td>$101</td><td>$01</td></tr>
 					<tr><td>$102</td><td>$02</td></tr>
+					<tr><td>...</td><td>...</td></tr>
 					</table><br>
 					Also remember that up to 128 different flag numbers can be used per level, this means, for example if you end up with one level
 					using 128 flag numbers (<kbd>$00-$7F</kbd>), you'll need to use another level to use additional flags.</p>
+					
+					<p>Remember, when the level loads, what group-128 to use to write to $7FC060 is specified in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>,
+					with the previously mentioned paragraph, when you choose any group-128, you are bounded to a range of what flag numbers of <kbd>!Freeram_MemoryFlag</kbd> to use:<br>
+					[<kbd>LowestFlagNumber = GroupNumber * 128</kbd>] to [<kbd>HighestFlagNumber = (GroupNumber * 128) + 127</kbd>]<br>
+					For example, if level <kbd>$105</kbd> uses group <kbd>$0</kbd>, only flags <kbd>$0-$7F</kbd> are available, if level <kbd>$1CB</kbd> uses group <kbd>$1</kbd>,
+					only flags <kbd>$80-$FF</kbd> are available.</p>
 				</li>
 			</ol>
 		</li>

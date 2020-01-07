@@ -23,13 +23,18 @@
 	<body onload="Calculate()">
 	<a href="../Readme.html#MemoryCalculator">Back</a><br><br>
 	
-	<p>Note: This javascript calculator uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt"><kbd>BigInt</kbd></a> as its number format. Make sure your
+	<h3>Notes</h3>
+	<ul>
+	<li><p>This javascript calculator uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt"><kbd>BigInt</kbd></a> as its number format. Make sure your
 	browser supports this format. Currently (the time of writing 2019-12-29), edge, IE (why use this browser?), safari (and IOS) don't support this format. The reason is because to prevent a potential
 	rounding issues with the precision, <kbd>Math.floor(x/y)</kbd> could have the quotient be rounded up before the floor function kicks in). An example is this: <kbd>Math.floor(100000000000000.9999)</kbd>,
-	its between <kbd>100000000000000</kbd> and <kbd>100000000000001</kbd>, however, it is rounded towards <kbd>100000000000001</kbd> and not <kbd>100000000000000</kbd>, which is wrong.<p>
+	its between <kbd>100000000000000</kbd> and <kbd>100000000000001</kbd>, however, it is rounded towards <kbd>100000000000001</kbd> and not <kbd>100000000000000</kbd>, which is wrong.<p></li>
 	
-	<p>Another note: Google chrome browser seems to struggle to render this page with huge tables, firefox seems fine when handling this.</p>
+	<li><p>Google chrome (and potentially other browsers) seems to struggle to render this page with huge tables (when you set the number of group-128s to a high value), firefox seems fine
+	when handling this.</p></li>
 	
+	<li><p>Leading zeros are omitted here, so if you are using CTR+F to find the flag number, don't have leading zeroes (find &ldquo;$03&rdquo; should be &ldquo;$3&rdquo; instead).</p></li>
+	</ul>
 	<kbd>!Freeram_MemoryFlagRAM = </kbd>$<input type="text" onchange="Calculate()" value="7FAD49" id="Freeram_MemoryFlagRAM" list="MemoryFlagRAMTables"><button onclick="BigintIncreaseDecreaseHexInput(1n, 'Freeram_MemoryFlagRAM', 0n, BigInt('0xFFFFFF')) ">+</button><button onclick="BigintIncreaseDecreaseHexInput(-1n, 'Freeram_MemoryFlagRAM', 0n, BigInt('0xFFFFFF')) ">-</button>
 	<datalist id="MemoryFlagRAMTables">
 	<option value="7FAD49">Default RAM address</option>
@@ -127,6 +132,7 @@
 		Output += "<br>"
 		
 		Output += "<table>"
+		Output += "<tr><th colspan='2'>RAM addresses</th><th colspan='8'>Bit within each byte</th></tr>"
 		Output += "<tr>"
 		Output += "<th>Address of <kbd>!Freeram_MemoryFlagRAM</kbd></th>"
 		Output += "<th>LM's <kbd>$7FC060</kbd> address</th>"
@@ -240,7 +246,7 @@
 		Output2 += "</pre></td></tr></table><br>"
 		
 		Output2 += "<h3>MBCM16WriteGroup128To7FC060.asm (uberasm tool)</h3>"
-		Output2 += "Note: if you have any levels not using the MBCM16, feel free to delete from the bottom up."
+		Output2 += "Note: if you have any levels not using the MBCM16, feel free to delete from the bottom up. Make sure both tables have equal number of items though."
 		Output2 += "<table><tr><td><pre>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += ";List of levels. Each level are given what group-128 to use.<br>"
@@ -256,7 +262,7 @@
 		Output2 += ";Although I could simply only have the table [.OneHundredTwentyEightFlagGroupList], have the index be<br>"
 		Output2 += ";the level number (X ranging from $0000 to $01FF), and have the value $FF to indcate that the level does<br>"
 		Output2 += ";not use MBCM16, it is very possible that you may have levels that don't use MBCM16 at all, thus resulting<br>"
-		Output2 += ";lots of unused values in the table with $FF. This method makes it possible to have less than 512 entries.<br>"
+		Output2 += ";lots of unused values in the table with $FF, which waste space.<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += ".LevelList<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < 512n; PlaceHolderLoopCount++) {
