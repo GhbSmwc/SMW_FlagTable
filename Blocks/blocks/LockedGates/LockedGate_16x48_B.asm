@@ -8,12 +8,16 @@ JMP TopCorner : JMP BodyInside : JMP HeadInside
 ; JMP WallFeet : JMP WallBody ; when using db $37
 	incsrc "../../FlagMemoryDefines/Defines.asm"
 
+MarioSide:
+HeadInside:
+	%CheckIfPlayerPressAgainstSidesHoriz()
+	BCS +
+	RTL
+	+
 MarioBelow:
 MarioAbove:
-MarioSide:
 TopCorner:
 BodyInside:
-HeadInside:
 ;WallFeet:	; when using db $37
 ;WallBody:
 	%GetWhatKeyCounter()					;>Get what counter based on what level.
