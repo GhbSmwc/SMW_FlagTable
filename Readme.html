@@ -152,9 +152,12 @@ good for debugging among other things.</li>
 			<p>Copy and paste the block and routine ASM files, their folders should have obvious names to know where to put.</p>
 			<ul>
 				<li>
-					<sup><font color="yellow">[Return later]</font></sup> Make sure you edit the tables in <kbd>GetWhatKeyCounter.asm</kbd> and <kbd>SearchBlockFlagIndex.asm</kbd>
-					to give it the level number, the layer it is on, its block location and what key counter the blocks should read on a given level number. You can set it to write on ANY flag number
-					here if you want other blocks to disappear/appear in the other level, regardless of the group number the level is set to, unlike the limitation to a range of 128 bits.
+					<p><sup><font color="yellow">[Return later]</font></sup> Make sure you edit the tables in <kbd>GetWhatKeyCounter.asm</kbd> and <kbd>SearchBlockFlagIndex.asm</kbd>
+					to give it the level number, the layer it is on, its block location and what key counter the blocks should read on a given level number.</p>
+					
+					<p>You can set it to write on ANY flag number here if you want other blocks to disappear/appear/change in the other level, regardless of the group number the current level
+					is set to, unlike the limitation to a range of 128 bits. Just avoid using the <kbd>%SearchBlockFlagIndex()</kbd> and <kbd>%GetWhatKeyCounter()</kbd> routines as they
+					lookup the current level.</p>
 				</li>
 			</ul>
 		</li>
