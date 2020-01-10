@@ -24,7 +24,7 @@
 	
 	<p>This tool provides a fast and easy way to handle binary &harr; hex due to most debuggers never had the option to adjust
 	the number display base (such as displaying binary instead of hexadecimal). This is useful when checking <kbd>!Freeram_MemoryFlagRAM</kbd>
-	on what bit is cleared/set and don't have to go great lengths to use a calculator</p>
+	on what bit is cleared/set and don't have to go great lengths to use a calculator and switch between radixes.</p>
 	
 	<table>
 	<tr>
@@ -44,12 +44,20 @@
 	<abbr title="Bit 3"><input type="checkbox" id="Bit3" onchange="CheckBoxInput()"></abbr>
 	<abbr title="Bit 2"><input type="checkbox" id="Bit2" onchange="CheckBoxInput()"></abbr>
 	<abbr title="Bit 1"><input type="checkbox" id="Bit1" onchange="CheckBoxInput()"></abbr>
-	<abbr title="Bit 0"><input type="checkbox" id="Bit0" onchange="CheckBoxInput()"></abbr>
+	<abbr title="Bit 0"><input type="checkbox" id="Bit0" onchange="CheckBoxInput()"></abbr><br>
+	<button onclick="WriteAllBits(true)">Set all bits</button><button onclick="WriteAllBits(false)">Clear all bits</button>
 	</td>
 	</tr>
 	</table>
 	
 <script>
+	function WriteAllBits(BitState) {
+		var LoopCount = 0
+		for (LoopCount = 0; LoopCount < 8; LoopCount++) {
+			document.getElementById("Bit" + LoopCount.toString(10)).checked = BitState
+		}
+		CheckBoxInput()
+	}
 	function ChangeInput(Numb) {
 		var HexNumber = clamp((parseInt(document.getElementById("HexInput").value, 16) + Numb), 0, 255)
 		document.getElementById("HexInput").value = pad(HexNumber.toString(16).toUpperCase(), 2)

@@ -203,6 +203,13 @@ good for debugging among other things.</li>
 					Use the X and Y coordinate for the table <kbd>?GetFlagNumberC800IndexStart:</kbd>. If involving multi-blocks,
 					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block's coordinate of the multi-blocks group:<br>
 					<a href="Readme_files/TopLeftAssignedBlock.png" target="_blank"><img src="Readme_files/TopLeftAssignedBlock.png" width="800"></a></p>
+					
+					<p>When dealing with doors (exit enabled objects that take you to another level), if you have the define setting <kbd>!TopPart</kbd> set to <kbd>!False</kbd>,
+					(a regular-sized 16x32 door setting that allows any powerup instead of just small mario) the block would use the block position <i>above</i> it (the custom block
+					itself will act as the lower part of the 16x32 door and the top part is the selected coordinate):</p>
+					<img src="Readme_files/DoorSelectedCoordinate.png"><br>
+					<p>Also be careful not to have the lower part of the 16x32 door be at Y=$0000, otherwise the tile above it is Y=$FFFF, which is invalid (I've added a failsafe
+					check in case of potential corrupting of arbitrary RAM).</p>
 				</li>
 				<li>
 					<p><sup><font color="yellow">[Return later]</font></sup>Also every time you place these memorized blocks, is that you must select them (all within the group if
@@ -243,7 +250,7 @@ good for debugging among other things.</li>
 		</li>
 	</ol>
 </ol>
-<h2>Troubleshooting</h2>
+<h2>Notes and Troubleshooting</h2>
 <ul>
 	<li>
 		If you're unsure if you had set up the flag and level tables correctly I have some protips:
@@ -256,10 +263,7 @@ good for debugging among other things.</li>
 				<p>If the block do function but keeps respawning on level load, then that means there is something wrong with the following:</p>
 				<ul>
 					<li>
-						<p>You forgot to use LM's conditional map16 for that block, or you set it to use the wrong flag number.</p>
-					</li>
-					<li>
-						<p><kbd>MBCM16WriteGroup128To7FC060.asm</kbd> (uberasm tool library) isn't set up correctly, set to use the wrong level number or wrong group-128.</p>
+						<p><kbd>MBCM16WriteGroup128To7FC060.asm</kbd> (uberasm tool library) isn't set up correctly, set to use the wrong level number, wrong group-128, wrong layer, and/or wrong block C800 positions.</p>
 					</li>
 					<li>
 						<p>You must've set the block to the wrong flag number that is assigned.</p>
@@ -272,11 +276,18 @@ good for debugging among other things.</li>
 		</ul>
 	</li>
 	<li>
-		You may be asking the question, why does the game lag if the player touches these MBCM16 blocks when they fail to trigger? This is because each frame and each of the player's collision point
+		<p>You may be asking the question, why does the game lag if the player touches these MBCM16 blocks when they fail to trigger? This is because each frame and each of the player's collision point
 		touches the block, it has to search a long list of flag numbers (and fail to find the matching entry), which tanks the game's performance. The longer the list, the harder the game will slow down. However, if your
 		entire hack does not contain any non-listed MBCM16 blocks (which your hack should have all of them be listed), you shouldn't worry, since the blocks execute for only 1 frame for a listed
-		MBCM16 block the moment the block disappears.
+		MBCM16 block the moment the block disappears.</p>
+	</li>
+	<li>
+		<p>When the player enters an exit-enabled locked door (or, in general, teleport to another level), the key counter on the HUD (heads-up display) will not update until the level the player is heading to is loaded. This is because during
+		level transition, the HUD no longer update the tiles every frame.</p>
 	</li>
 </ul>
 <h2>Credits</h2>
-<ul><a href="https://stackoverflow.com/a/8083480/11030779">Stack Overflow on the font for inputs</a>.</ul>
+<ul>
+<li><a href="https://stackoverflow.com/a/8083480/11030779">Stack Overflow on the font for inputs</a>.</li>
+<li><a href="https://www.smwcentral.net/?p=profile&id=22951">MarioFanGamer</a> for the door blocks.</li>
+</ul>

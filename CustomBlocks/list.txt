@@ -14,3 +14,4 @@
 50D:130 LockedGates/LockedGate_32x32_TR.asm
 50E:130 LockedGates/LockedGate_32x32_BL.asm
 50F:130 LockedGates/LockedGate_32x32_BR.asm
+610:025 LockedGates/LockedDoor.asm
