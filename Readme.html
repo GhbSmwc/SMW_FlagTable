@@ -206,10 +206,9 @@ good for debugging among other things.</li>
 					
 					<p>When dealing with doors (exit enabled objects that take you to another level), if you have the define setting <kbd>!TopPart</kbd> set to <kbd>!False</kbd>,
 					(a regular-sized 16x32 door setting that allows any powerup instead of just small mario) the block would use the block position <i>above</i> it (the custom block
-					itself will act as the lower part of the 16x32 door and the top part is the selected coordinate):</p>
+					itself will act as the lower part of the 16x32 door and the top part is the selected coordinate), unless the lower half of the door is at <kbd>Y=$0000</kbd>,
+					(the selected coordinate will use <kbd>Y=$0000</kbd> instead of <kbd>Y=$FFFF</kbd>):</p>
 					<img src="Readme_files/DoorSelectedCoordinate.png"><br>
-					<p>Also be careful not to have the lower part of the 16x32 door be at Y=$0000, otherwise the tile above it is Y=$FFFF, which is invalid (I've added a failsafe
-					check in case of potential corrupting of arbitrary RAM).</p>
 				</li>
 				<li>
 					<p><sup><font color="yellow">[Return later]</font></sup>Also every time you place these memorized blocks, is that you must select them (all within the group if

@@ -60,6 +60,9 @@ endif
 		if not(!TopPart)
 			SEC
 			SBC #$0010
+			BPL +						;>If the user places the 16x32 door bottom half at the top of the level (results Y=$0000 - upper tile at Y=$FFF0)
+			LDA #$0000					;>Then set a bottom limit to avoid invalid index.
+			+
 		endif
 		LSR #4							;|
 		STA $02							;/
