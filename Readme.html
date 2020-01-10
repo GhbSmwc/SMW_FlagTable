@@ -78,7 +78,7 @@ good for debugging among other things.</li>
 				<p>Because the blocks check their locations and level numbers, you must open these files:</p>
 				<ul>
 					<li><p><kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>, this determines what group-128 to use for each level using the MBCM16.</p></li>
-					<li><p><kbd>UberasmTool/Library/MBCM16DisplayKeyCounter</kbd>, this displays the key counter on the heads-up display (HUD) of how many keys of a particular area.</p></li>
+					<li><p><kbd>UberasmTool/Library/MBCM16DisplayKeyCounter</kbd>, this displays the key counter on the heads-up display (HUD) of how many keys of a particular level.</p></li>
 					<li><p><kbd>CustomBlocks/routines/SearchBlockFlagIndex.asm</kbd>, blocks' routine to find out what flag they are.</p></li>
 					<li><p><kbd>CustomBlocks/routines/GetWhatKeyCounter</kbd>, blocks' routine to find what key to use.</p></li>
 				</ul>
@@ -128,9 +128,25 @@ good for debugging among other things.</li>
 		<p>Uberasm tool insertion</p>
 		<ol>
 			<li>
-				<p>In any level that are using the flags, create/edit a .asm file (like <kbd>Level105.asm</kbd>), in that file, paste this code as <kbd>load:</kbd>:
-<table><tr><td><pre>load:
+				<p><sup><font color="yellow">[Return later]</font></sup>In any level that are using the flags, create/edit a .asm file (like <kbd>Level105.asm</kbd>), in that file, paste this code:
+<table><tr><td><pre>
+	incsrc "../FlagMemoryDefines/Defines.asm"
+	
+	load:
+	;Transfer group-128 to $7FC060
 	JSL MBCM16WriteGroup128To7FC060_LoadFlagTableToCM16
+	;[...]
+	RTL
+main:
+	;Display key counter on the HUD (during the level at play)
+	LDY #$00					;>$xx is what key counter to use, as an index from !Freeram_KeyCounter.
+	JSL MBCM16DisplayKeyCounter_DisplayHud
+	;[...]
+	RTL
+init:
+	;Display key counter on the HUD (during screen fading into the level)
+	LDY #$00					;>$xx is what key counter to use, as an index from !Freeram_KeyCounter.
+	JSL MBCM16DisplayKeyCounter_DisplayHud
 	;[...]
 	RTL
 </pre></td></tr></table>
@@ -188,7 +204,7 @@ good for debugging among other things.</li>
 			<ol>
 				<li>
 					<p>Insert the <kbd>.map16</kbd> file included in this package (located at <kbd>Blocks/Map16.map16</kbd>) using Lunar Magic's map16 editor (the button showing a
-					yellow ? block with the red left arrow). By default it should be inserted in page 5.</p>
+					yellow ? block with the red left arrow). By default it should be inserted in page 5-6.</p>
 				</li>
 			</ol>
 		</li>
