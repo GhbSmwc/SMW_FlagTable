@@ -201,7 +201,7 @@ good for debugging among other things.</li>
 					they're on is easy, the block coordinate is displayed LM's status bar on the bottom-left corner of what block your mouse cursor is hovering:<br>
 					<img src="Readme_files/LM_BlockCoords.png"><br>
 					Use the X and Y coordinate for the table <kbd>?GetFlagNumberC800IndexStart:</kbd>. If involving multi-blocks,
-					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block's coordinate of the multi-blocks group:<br>
+					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block's coordinate of the multi-blocks group (shown in red squares):<br>
 					<a href="Readme_files/TopLeftAssignedBlock.png" target="_blank"><img src="Readme_files/TopLeftAssignedBlock.png" width="800"></a></p>
 					
 					<p>When dealing with doors (exit enabled objects that take you to another level), if you have the define setting <kbd>!TopPart</kbd> set to <kbd>!False</kbd>,
@@ -240,10 +240,10 @@ good for debugging among other things.</li>
 					Also remember that up to 128 different flag numbers can be used per level, this means, for example if you end up with one level
 					using 128 flag numbers (<kbd>$00-$7F</kbd>), you'll need to use another level to use additional flags.</p>
 					
-					<p>Remember, when the level loads, what group-128 to use to write to $7FC060 is specified in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>,
-					with the previously mentioned paragraph, when you choose any group-128, you are bounded to a range of what flag numbers of <kbd>!Freeram_MemoryFlag</kbd> to use:<br>
+					<p>Remember, when the level loads, what group-128 to use to write to $7FC060 is specified in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>.
+					With the previously mentioned paragraph, when you choose any group-128, you are bounded to a range of what flag numbers of <kbd>!Freeram_MemoryFlag</kbd> to use:<br>
 					[<kbd>LowestFlagNumber = GroupNumber * 128</kbd>] to [<kbd>HighestFlagNumber = (GroupNumber * 128) + 127</kbd>]<br>
-					For example, if level <kbd>$105</kbd> uses group <kbd>$0</kbd>, only flags <kbd>$0-$7F</kbd> are available, if level <kbd>$1CB</kbd> uses group <kbd>$1</kbd>,
+					For example, if level <kbd>$105</kbd> uses group <kbd>$0</kbd>, only flags <kbd>$0-$7F</kbd> are available in that level, if level <kbd>$1CB</kbd> uses group <kbd>$1</kbd>,
 					only flags <kbd>$80-$FF</kbd> are available.</p>
 				</li>
 			</ol>
