@@ -44,7 +44,6 @@ if not(!BossDoor)
 endif
 
 ;GHB's code:
-	print "",pc
 		%GetWhatKeyCounter()					;>Get what counter based on what level.
 		BCS Done						;>If not found, skip.
 		TAX							;>Transfer key counter index to X.
@@ -58,6 +57,7 @@ endif
 		STA $00							;/
 		LDA $98							;\BlockYPos = floor(PixelYPos/16)
 		if not(!TopPart)
+			print "buggy if statement!"
 			SEC
 			SBC #$0010
 			BPL +						;>If the user places the 16x32 door bottom half at the top of the level (results Y=$0000 - upper tile at Y=$FFF0)

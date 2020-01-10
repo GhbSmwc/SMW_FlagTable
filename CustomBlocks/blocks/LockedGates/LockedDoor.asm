@@ -44,7 +44,6 @@ if not(!BossDoor)
 endif
 
 ;GHB's code:
-	print "",pc
 		%GetWhatKeyCounter()					;>Get what counter based on what level.
 		BCS Done						;>If not found, skip.
 		TAX							;>Transfer key counter index to X.
@@ -106,4 +105,4 @@ DonePullX:
 	PLX
 	RTL
 
-;print "A locked door."
+print "A locked door."

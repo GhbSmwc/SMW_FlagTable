@@ -92,7 +92,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 	dw $0105		;>Flag $14 (Group $0) -> LM's CM16 flag $14
 	dw $0105		;>Flag $15 (Group $0) -> LM's CM16 flag $15
 	dw $0105		;>Flag $16 (Group $0) -> LM's CM16 flag $16
-	dw $FFFF		;>Flag $17 (Group $0) -> LM's CM16 flag $17
+	dw $0105		;>Flag $17 (Group $0) -> LM's CM16 flag $17
 	dw $FFFF		;>Flag $18 (Group $0) -> LM's CM16 flag $18
 	dw $FFFF		;>Flag $19 (Group $0) -> LM's CM16 flag $19
 	dw $FFFF		;>Flag $1A (Group $0) -> LM's CM16 flag $1A
