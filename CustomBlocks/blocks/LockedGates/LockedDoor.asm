@@ -29,6 +29,8 @@ JMP Return : JMP MarioInside : JMP Return
 incsrc "../../FlagMemoryDefines/Defines.asm"
 
 MarioInside:
+	LDA $71			;\If already entering, don't subtract additional keys (just in case)
+	BNE Return		;/
 	LDA $16			;\  Only enter the door if you press up.
 	AND #$08		; |
 	BEQ Return		;/ 
