@@ -60,7 +60,7 @@ will use that index number to determine what flag number to set/reset a bit in <
 
 <h2>Useful stuff provided here</h2>
 <ul>
-<li>I made a <a href="Readme_files/JS_MemoryCalculator.html" id="MemoryCalculator">Javascript tool</a> that displays the memory statistics along with what flag gets written to what flag in <kbd>$7FC060</kbd>,
+<li>I made a <a href="Readme_files/JS_MemoryCalculator.html" id="MemoryCalculator">Javascript tool</a> that displays the memory statistics, what flag number is in what byte, and what flag gets written to what flag in <kbd>$7FC060</kbd>,
 good for debugging among other things.</li>
 <li>For debugging and dealing with bitwise values, I've provided a <a href="Readme_files/JS_HexBinary.html" id="HexBinary">simple converter</a> between hex and binary.</li>
 </ul>
@@ -224,7 +224,8 @@ init:
 					(a regular-sized 16x32 door setting that allows any powerup instead of just small mario) the block would use the block position <i>above</i> it (the custom block
 					itself will act as the lower part of the 16x32 door and the top part is the selected coordinate), unless the lower half of the door is at <kbd>Y=$0000</kbd>,
 					(the selected coordinate will use <kbd>Y=$0000</kbd> instead of <kbd>Y=$FFFF</kbd>):</p>
-					<img src="Readme_files/DoorSelectedCoordinate.png"><br>
+					<img src="Readme_files/DoorSelectedCoordinate.png">
+					<p>Small and a normal-sized doors included, you don't have to create a copy and edit the settings to make a small door.</p>
 				</li>
 				<li>
 					<p><sup><font color="yellow">[Return later]</font></sup>Also every time you place these memorized blocks, is that you must select them (all within the group if
@@ -235,21 +236,21 @@ init:
 					<p>What LMCM16 flag number you should put down is the flag number of <kbd>!Freeram_MemoryFlag</kbd>, MOD 128. For example:<br>
 					<table>
 					<tr><th>Flag number of <kbd>!Freeram_MemoryFlag</kbd></th><th>LM's flag number</th></tr>
-					<tr><td>$000</td><td>$00</td></tr>
-					<tr><td>$001</td><td>$01</td></tr>
-					<tr><td>$002</td><td>$02</td></tr>
+					<tr><td>$000 (Group 0)</td><td>$00</td></tr>
+					<tr><td>$001 (Group 0)</td><td>$01</td></tr>
+					<tr><td>$002 (Group 0)</td><td>$02</td></tr>
 					<tr><td>...</td><td>...</td></tr>
-					<tr><td>$07E</td><td>$7E</td></tr>
-					<tr><td>$07F</td><td>$7F</td></tr>
-					<tr><td>$080</td><td>$00</td></tr>
-					<tr><td>$081</td><td>$01</td></tr>
-					<tr><td>$082</td><td>$02</td></tr>
+					<tr><td>$07E (Group 0)</td><td>$7E</td></tr>
+					<tr><td>$07F (Group 0)</td><td>$7F</td></tr>
+					<tr><td>$080 (Group 1)</td><td>$00</td></tr>
+					<tr><td>$081 (Group 1)</td><td>$01</td></tr>
+					<tr><td>$082 (Group 1)</td><td>$02</td></tr>
 					<tr><td>...</td><td>...</td></tr>
-					<tr><td>$0FE</td><td>$7E</td></tr>
-					<tr><td>$0FF</td><td>$7F</td></tr>
-					<tr><td>$100</td><td>$00</td></tr>
-					<tr><td>$101</td><td>$01</td></tr>
-					<tr><td>$102</td><td>$02</td></tr>
+					<tr><td>$0FE (Group 1)</td><td>$7E</td></tr>
+					<tr><td>$0FF (Group 1)</td><td>$7F</td></tr>
+					<tr><td>$100 (Group 2)</td><td>$00</td></tr>
+					<tr><td>$101 (Group 2)</td><td>$01</td></tr>
+					<tr><td>$102 (Group 2)</td><td>$02</td></tr>
 					<tr><td>...</td><td>...</td></tr>
 					</table><br>
 					Also remember that up to 128 different flag numbers can be used per level, this means, for example if you end up with one level
@@ -304,5 +305,5 @@ init:
 <h2>Credits</h2>
 <ul>
 <li><a href="https://stackoverflow.com/a/8083480/11030779">Stack Overflow on the font for inputs</a>.</li>
-<li><a href="https://www.smwcentral.net/?p=profile&id=22951">MarioFanGamer</a> for the door blocks.</li>
+<li><a href="https://www.smwcentral.net/?p=profile&id=22951">MarioFanGamer</a> for the <a href="https://www.smwcentral.net/?p=section&a=details&id=21130">door blocks.</a></li>
 </ul>
