@@ -19,12 +19,14 @@
 	PHK				;\Switch to current bank
 	PLB				;/
 	PHY				;>Preserve Y
+	PHP				;>Preserve processor flags (we need the carry bit)
 	PHA				;>A as input preserved.
 	AND.b #%00000111		;>WhatBit = Bitnumber MOD 8
 	TAY				;>Place in Y.
 	PLA				;>Restore what was originally in the input.
 	LSR #3				;>ByteNumber = floor(Bitnumber/8)
 	TAX				;>Place in X.
+	PLP				;>Restore processor flags.
 	BCS ?SetBit
 	
 	;ClearBit
