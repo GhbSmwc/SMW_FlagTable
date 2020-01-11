@@ -22,6 +22,9 @@ HeadInside:
 	+
 MarioBelow:
 BodyInside:
+;WallFeet:	; when using db $37
+;WallBody:
+Main:
 	%GetWhatKeyCounter()					;>Get what counter based on what level.
 	;BCS Done						;>If not found, skip.
 	BCC +
