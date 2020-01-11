@@ -8,18 +8,27 @@ JMP TopCorner : JMP BodyInside : JMP HeadInside
 	incsrc "../../FlagMemoryDefines/Defines.asm"
 
 
+MarioBelow:
+	LDA $15
+	BIT.b #%00001000
+	BNE Main
+	RTL
+MarioAbove:
+TopCorner:
+	LDA $15
+	BIT.b #%00000100
+	BNE Main
+	RTL
 MarioSide:
 HeadInside:
 	%CheckIfPlayerPressAgainstSidesHoriz()
 	BCS +
 	RTL
 	+
-MarioBelow:
-MarioAbove:
-TopCorner:
 BodyInside:
 ;WallFeet:	; when using db $37
 ;WallBody:
+Main:
 	%GetWhatKeyCounter()					;>Get what counter based on what level.
 	BCS Done						;>If not found, skip.
 	TAX							;>Transfer key counter index to X.

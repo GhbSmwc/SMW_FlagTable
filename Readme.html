@@ -45,10 +45,14 @@ even if all the playable levels on an average hack uses this mechanic.</p>
 
 <p>This RAM acts as a universal global memory, and shouldn't be reset on level load and overworld (it must be &ldquo;untouched&rdquo; RAM initialized by the SRAM/BWRAM patch when the user starts the game).</p>
 
-<p>The blocks included in this ASM resources is a key (collectible and not carried like a key sprite) and locked door. How this works using this resource is that unlike
+<p>The blocks included in this ASM resources is a key (collectible and not carried like a key sprite), locked gates* and doors*. How this works using this resource is that unlike
 the hack <i>Mushroom Kingdom - Under Crimson Skies</i>, this ASM pack do not use duplicate map16 blocks each having their own flag to write, instead when the player
 triggers the block, the block checks what level,  if its on layer 1 or 2, and its location within the level. If all 3 of these attributes are found on a specific index number,
 will use that index number to determine what flag number to set/reset a bit in <kbd>!Freeram_MemoryFlag</kbd>, otherwise it will do nothing as a failsafe.</p>
+
+<ul><li><p>(*I termed &ldquo;gates&rdquo; and &ldquo;doors&rdquo; as two separate things: &ldquo;gates&rdquo; refer to solid objects that acts as a barrier to prevent the player from accessing other parts of the
+level the player is currently in, while &ldquo;doors&rdquo; is an exit-enabled object that teleports the player to another level. This terminology is to prevent confusion since both in real-life terms,
+they control access to another point.)</p></li></ul>
 
 <h2>What you need</h2>
 <ul>
@@ -83,7 +87,7 @@ good for debugging among other things.</li>
 					<li><p><kbd>CustomBlocks/routines/GetWhatKeyCounter</kbd>, blocks' routine to find what key to use.</p></li>
 				</ul>
 				<p>These contains a list of level numbers, block location within level and group numbers (times <kbd>$10</kbd>), and what key counter for the level to use.
-				Comments should fully explained how each table correspond. Even better is that the JS tool (linked previously) also print out the tables (with comments
+				Comments should fully explained how each table correspond. Even better is that the JS tool (linked previously) also print out placeholder template tables (with comments
 				pointing of each item and their flag numbers/Level ID) for you to copy.</p>
 				
 				<li><p>Open <kbd>FlagMemoryDefines/Defines.asm</kbd> and edit <kbd>!Freeram_MemoryFlag</kbd> if you find RAM conflicts with another ASM resource. I highly
@@ -100,13 +104,13 @@ good for debugging among other things.</li>
 				section and paste them accordingly. Remember that the order in table and defaults must match (the first <kbd>dl $xxxxxx : dw $yyyy</kbd> goes to the first group of bytes
 				in &ldquo;<kbd>defaults</kbd>&rdquo;, second on second, and so on). Remember that this is the default value they would be when you start a new game.</p>
 				
-				<p>This here is the default values that are going to be copied to <kbd>$7FC060-$7FC06F</kbd> upon entering a stage using this ASM resource.</p>
+				<p>This here is the default values that are going to be copied to <kbd>$7FC060-$7FC06F</kbd> upon entering a stage using this ASM resource when starting a new game.</p>
 				
 				<p>Keep in mind about LM's CM16:</p>
 				<ul>
 					<li>
 						<p>With &ldquo;Always show objects&rdquo; unchecked, if the flag is 0, it uses tile <kbd>$0025</kbd>, otherwise use the tile you've just placed down. If you want
-						something to not exist but later in the game to appear, then you should default the flag to 0 and SET the bit on an event the player does something to make it appear.
+						something to not exist but later in the game to appear forever, then you should default the flag to 0 and SET the bit on an event the player does something to make it appear.
 						To make it disappear and stays gone forever, you should default the flag to 1 and CLEAR the flag on an event the player does something to make it gone forever (such as
 						when the player picks up the key).</p>
 					</li>
@@ -155,7 +159,8 @@ init:
 				in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p>
 			</li>
 			<li>
-				<sup><font color="yellow">[Return later]</font></sup>Specify what group-128 in <kbd>MBCM16WriteGroup128To7FC060.asm</kbd> should your level will use.
+				<sup><font color="yellow">[Return later]</font></sup>Specify what group-128 in <kbd>MBCM16WriteGroup128To7FC060.asm</kbd> should your level will use,
+				Then run uberasm tool to apply the changes.
 			</li>
 		</ol>
 	</li>
@@ -169,7 +174,8 @@ init:
 			<ul>
 				<li>
 					<p><sup><font color="yellow">[Return later]</font></sup> Make sure you edit the tables in <kbd>GetWhatKeyCounter.asm</kbd> and <kbd>SearchBlockFlagIndex.asm</kbd>
-					to give it the level number, the layer it is on, its block location and what key counter the blocks should read on a given level number.</p>
+					to give it the level number, the layer it is on, its block location and what key counter the blocks should read on a given level number. For block location, If dealing with multiple
+					blocks in a group, such as the locked gates and doors, refer <a href="#TopLeftGroup" id="BlockInsertTables">here</a> that it uses their top-leftmost block.</p>
 					
 					<p>You can set it to write on ANY flag number here if you want other blocks to disappear/appear/change in the other level, regardless of the group number the current level
 					is set to, unlike the limitation to a range of 128 bits. Just avoid using the <kbd>%SearchBlockFlagIndex()</kbd> and <kbd>%GetWhatKeyCounter()</kbd> routines as they
@@ -212,7 +218,7 @@ init:
 			Placing blocks in the level
 			<ol>
 				<li>
-					<p><sup><font color="yellow">[Return later]</font></sup> Every time you place blocks in the level, you have to assign them to their respective flags, this involves
+					<p><sup><font color="yellow">[Return later]</font></sup><a href="#BlockInsertTables" id="TopLeftGroup">^</a>, Every time you place blocks in the level, you have to assign them to their respective flags, this involves
 					the frequent editing of <kbd>SearchBlockFlagIndex.asm</kbd>. While finding the level numbers and what layer
 					they're on is easy, the block coordinate is displayed LM's status bar on the bottom-left corner of what block your mouse cursor is hovering:<br>
 					<img src="Readme_files/LM_BlockCoords.png"><br>
@@ -292,10 +298,17 @@ init:
 		</ul>
 	</li>
 	<li>
-		<p>You may be asking the question, why does the game lag if the player touches these MBCM16 blocks when they fail to trigger? This is because each frame and each of the player's collision point
-		touches the block, it has to search a long list of flag numbers (and fail to find the matching entry), which tanks the game's performance. The longer the list, the harder the game will slow down. However, if your
-		entire hack does not contain any non-listed MBCM16 blocks (which your hack should have all of them be listed), you shouldn't worry, since the blocks execute for only 1 frame for a listed
-		MBCM16 block the moment the block disappears.</p>
+		<p>You may be asking the question, why does the game lag if the player tries to activate these blocks when they aren't assigned to the list? This is because each frame and each of the player's collision point
+		touches the block, it has to search a long list of flag numbers (and fail to find the matching entry), which tanks the game's performance (a loop with huge number of iterations). The longer the list, the
+		harder the game will slow down. However, if your entire hack does not contain any non-listed MBCM16 blocks (which your hack <u>should</u> have all of them be listed), you shouldn't worry, since the blocks
+		execute for only 1 frame for a listed MBCM16 block the moment the block disappears.</p>
+		
+		<ul>
+			<li>
+				Just like most loops in vanilla SMW, it checks the last item, going backwards on the index towards the first, this also includes the uberasm tool dealing what group-128 the current level should use.
+				Thus if the block you interact is at the lower indexes (close to index/flag 0), it would take longer than the higher indexes to find the matching item.
+			</li>
+		</ul>
 	</li>
 	<li>
 		<p>When the player enters an exit-enabled locked door (or, in general, teleport to another level), the key counter on the HUD (heads-up display) will not update until the level the player is heading to is loaded. This is because during
