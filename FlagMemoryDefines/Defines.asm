@@ -96,7 +96,7 @@ endif
  ;Locked Gates:
   ;What sound to play when unlocking a gate:
    !Settings_MBCM16_LockedGate_SoundRAM = $1DF9|!addr
-   !Settings_MBCM16_LockedGate_SoundNum = $2A
+   !Settings_MBCM16_LockedGate_SoundNum = $10
   
   !Settings_MBCM16_LockedGate_GenerateSmoke = 1
    ;^Generate smoke: 0 = no, 1 = yes.
