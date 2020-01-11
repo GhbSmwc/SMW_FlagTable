@@ -21,10 +21,6 @@ TopCorner:
 	RTL
 MarioSide:
 HeadInside:
-	%CheckIfPlayerPressAgainstSidesHoriz()
-	BCS +
-	RTL
-	+
 BodyInside:
 ;WallFeet:	; when using db $37
 ;WallBody:

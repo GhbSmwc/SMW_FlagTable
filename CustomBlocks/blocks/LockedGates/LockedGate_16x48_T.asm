@@ -8,11 +8,6 @@ JMP TopCorner : JMP BodyInside : JMP HeadInside
 ; JMP WallFeet : JMP WallBody ; when using db $37
 	incsrc "../../FlagMemoryDefines/Defines.asm"
 
-MarioBelow:
-	LDA $15
-	BIT.b #%00001000
-	BNE Main
-	RTL
 MarioAbove:
 TopCorner:
 	LDA $15
@@ -25,6 +20,7 @@ HeadInside:
 	BCS +
 	RTL
 	+
+MarioBelow:
 BodyInside:
 ;WallFeet:	; when using db $37
 ;WallBody:

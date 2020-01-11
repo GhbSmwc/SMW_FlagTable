@@ -13,18 +13,14 @@ MarioBelow:
 	BIT.b #%00001000
 	BNE Main
 	RTL
-MarioAbove:
-TopCorner:
-	LDA $15
-	BIT.b #%00000100
-	BNE Main
-	RTL
 MarioSide:
 HeadInside:
 	%CheckIfPlayerPressAgainstSidesHoriz()
 	BCS +
 	RTL
 	+
+MarioAbove:
+TopCorner:
 BodyInside:
 ;WallFeet:	; when using db $37
 ;WallBody:
