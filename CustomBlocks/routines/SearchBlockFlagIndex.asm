@@ -599,7 +599,7 @@ function GetC800IndexVertiLvl(XPos, YPos) = (512*(YPos/16))+(256*(XPos/16))+((YP
 ;-$HHHH is the level height (in pixels), basically RAM address $13D7. Fastest way to
 ; know what value is this in a level is in lunar magic, hover your mouse on the last
 ; row of blocks, and the status bar on the window (<XPos_in_hex>,<YPos_in_hex>:<TileNumber>),
-; take the  and add 1 AND THEN multiply by $10 (or just add a zero at the end;
+; take the <YPos_in_hex> and add 1 AND THEN multiply by $10 (or just add a zero at the end;
 ; example: ($1A + 1)*$10 = $1B0)
 ;-$XXXX and $YYYY are the block coordinates, in units of 16x16 blocks (not pixels).
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
