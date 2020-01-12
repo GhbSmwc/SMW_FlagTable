@@ -73,6 +73,8 @@ good for debugging among other things.</li>
 <p>This is the type of ASM resource that you may have to come back, edit stuff, and then re-insert periodically as you develop your hack, since this works in tandem of you creating levels. Instructions below marked with
 &ldquo;<sup><font color="yellow">[Return later]</font></sup>&rdquo; indicates you to perform these steps when re-inserting in your hack.</p>
 
+<p>I've included a sample level (for level 105) demonstrating the key blocks, along with sample ASM tables (what flags the blocks should be using and what group-128 to use in level 105).</p>
+
 <h2>Insertion</h2>
 <ol>
 	<li>
@@ -313,6 +315,41 @@ init:
 	<li>
 		<p>When the player enters an exit-enabled locked door (or, in general, teleport to another level), the key counter on the HUD (heads-up display) will not update until the level the player is heading to is loaded. This is because during
 		level transition, the HUD no longer update the tiles every frame.</p>
+	</li>
+	<li>
+		<p>You don't have to have all flags to be permanently cleared/set, if you want some levels to only reset them when the player goes to the overworld map via dying, START+SELECT, and beating the level. Just have an ASM file created into uberasm
+		tool's gamemode folder to be called on the <kbd>list.txt</kbd> as gamemode <kbd>0D</kbd> (overworld fade-in) or <kbd>0E</kbd> (overworld). I would prefer having this under <kbd>init:</kbd> because it is not necessary to &ldquo;reset&rdquo;
+		them every frame on the map (reset in quotes, because, as in to restore their original values, not always have them all zero on all flags):
+<table><tr><td><pre>
+	init:
+	;This will put the flags back to their set position by writing all $FFs:
+	LDX.b #&lt;NumberOfBytes&gt;-1
+	-
+	LDA #$FF			;&gt;Value to write on each byte. $00 = %00000000, $FF = %11111111.
+	STA &lt;StartingRAMAddress&gt;
+	TXA
+	SEC
+	SBC #$01
+	TAX
+	BCS -				;&gt;Why am I not using DEX : BPL -? Because then you're limited to indexes $00-$7F.
+</pre></td></tr></table><br>
+
+If you happen to have a byte that contains flags that shouldn't be reverted while other to be reverted:
+<table><tr><td><pre>
+	;Example: %RRRR----, where R means a bit must be reverted, while - retains its value.
+	
+	;Clear bits
+	LDA $xxxxxx
+	AND.b #%00001111		;&gt;AND returns 0s for any matching bit pairs have at least one 0 on either, so AND is used to clear bits.
+	STA $xxxxxx
+	
+	;Set bits
+	LDA $xxxxxx
+	AND.b #%11110000		;&gt;ORA returns 0s if both matching bit pairs are 0, therefore, ORA is used to set bits.
+	STA $xxxxxx
+</pre></td></tr></table><br>
+
+</p>
 	</li>
 </ul>
 <h2>Credits</h2>

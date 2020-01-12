@@ -246,7 +246,9 @@
 		Output2 += "</pre></td></tr></table><br>"
 		
 		Output2 += "<h3>MBCM16WriteGroup128To7FC060.asm (uberasm tool)</h3>"
-		Output2 += "Note: if you have any levels not using the MBCM16, feel free to delete from the bottom up. Make sure both tables have equal number of items though."
+		Output2 += "Note: if you have any levels not using the MBCM16, feel free to delete from the bottom up. Make sure both tables have equal number of items though.<br><br>"
+		Output2 += "<kbd>Level ID</kbd> refers to what index on the list, this is not the same as the flag numbers for the previous tables. It's there so that you can match "
+		Output2 += "what level and what group-128 each item are linked to (example: the 10th item on the list correlates to the 10th item on the other list)."
 		Output2 += "<table><tr><td><pre>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += ";List of levels. Each level are given what group-128 to use.<br>"
@@ -272,7 +274,8 @@
 		Output2 += "..End<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += ";This table specifies what group-128 each level should use.<br>"
-		Output2 += ";Only enter numbers as [$X0], where X is the group number in hex.<br>"
+		Output2 += ";Only enter numbers here as [$X0], where X is the group number in hex (therefore, numbers here must be<br>"
+		Output2 += ";multiples of 16: [ValueYouPutHere = GroupNumber * $10]).<br>"
 		Output2 += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<br>"
 		Output2 += ".OneHundredTwentyEightFlagGroupList<br>"
 		for (PlaceHolderLoopCount = 0n; PlaceHolderLoopCount < 512; PlaceHolderLoopCount++) {

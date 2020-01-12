@@ -1,12 +1,5 @@
 	incsrc "../FlagMemoryDefines/Defines.asm"
 	
-;Execute like this:
-;in level:
-;	load:
-;	JSL MBM16WriteTo7FC060_LoadFlagTableToCM16
-;	JSL MBCM16DisplayKeyCounter_DisplayHud
-;	;[...]
-;	RTL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Load flag table into conditional map16 flags (CM16: $7FC060)
 ;
@@ -84,53 +77,32 @@ LoadFlagTableToCM16:
 	SEP #$30
 	PLB				;>Restore bank
 	RTL
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;Tables below. Each item in the table is each level.
-	;Orders correspond on each table (all first items
-	;are associated, second associated, and so on).
-	;
-	;Note: Every level must be assigned to EXACTLY ONE group-128, you
-	;cannot assign one level to multiple group-128s. However, you
-	;can have 2+ levels using the same group.
-	;
-	;Also make sure the list is entirely in between the starting labels
-	;([.LevelList] and [.OneHundredTwentyEightFlagGroupList]) and the
-	;ending label [..End] so that all are counted properly during execution.
-	;
-	;I would recommend making sure the tables here are 1 item per line and using
-	;Notepad++ and use [Edit -> Column editor -> Number to Insert] and:
-	;Initial number: 0
-	;Increase by: 1 or 2
-	;Leading zeroes: checked
-	;Format: Dec or hex
-	;so you can instantly add a comment (see example to the right of the dw table)
-	;and conveniently numbered for easy of what flag number each item in their tables
-	;are associated to.
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.LevelList
-	;Avoid having duplicate level numbers here, thus all level numbers
-	;must be unique.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;List of levels. Each level are given what group-128 to use.
+;You cannot have one level with multiple group-128s, however
+;you can have multiple levels using the same group-128, which
+;that saves you memory if you find one level using less than 128
+;flags.
+;
+;Also, you cannot have duplicate level numbers here, else during
+;running this, it will ONLY take the last level number of the duplicates
+;matching with the current level number.
+;
+;Although I could simply only have the table [.OneHundredTwentyEightFlagGroupList], have the index be
+;the level number (X ranging from $0000 to $01FF), and have the value $FF to indcate that the level does
+;not use MBCM16, it is very possible that you may have levels that don't use MBCM16 at all, thus resulting
+;lots of unused values in the table with $FF, which waste space.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+.LevelList
 	dw $0105		;>Item 0 (X = $0000, Y = $0000)
 	dw $0106		;>Item 1 (X = $0002, Y = $0001)
-	..End
-	
-	.OneHundredTwentyEightFlagGroupList
-	;^Labels cannot start with numbers on the string.
-	; Only put numbers that are multiples of 16 ($10):
-	; Group 0: $00
-	; Group 1: $10
-	; Group 2: $20
-	;
-	; [ValueInTable = GroupNumber*$10], or simply $<groupNumb>0.
-	;
-	; Although I could simply not use a table and assume what item
-	; in the level list is [TableGroup = LevelIndex*$10], that would
-	; make it impossible if you want to conserve RAM by having multiple
-	; levels using the same group number (when one level uses less than
-	; 128 bits).
-	;
-	; You CAN have duplicate numbers here if you wanted multiple levels
-	; using the same group-128.
+..End
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;This table specifies what group-128 each level should use.
+;Only enter numbers here as [$X0], where X is the group number in hex (therefore, numbers here must be
+;multiples of 16: [ValueYouPutHere = GroupNumber * $10]).
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+.OneHundredTwentyEightFlagGroupList
 	db $00			;>Item 0
 	db $10			;>Item 1
-	..End
+..End
