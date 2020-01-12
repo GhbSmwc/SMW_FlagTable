@@ -64,19 +64,20 @@ endif
  else
   !Freeram_KeyCounter = $4001E9
  endif
- ;^[BytesUsed = How_Many_local_key_counter_you_want] [Must be saved] How many keys the player have. Note that this is stored as a table
+ ;^[BytesUsed = How_Many_local_key_counters_you_want] [Must be saved] How many keys the player have. Note that this is stored as a table
  ; with each byte being their own separate key counter local to the level(s) they are associated with. This is to prevent
- ; the player from taking the key they got from one area, exit to the map, go to another "main" level and use that key
- ; on the completely different level. This is similar to how modern Legend of Zelda's dungeon keys to only be useable
- ; in the dungeon you found them.
+ ; the player from taking the key they got from one area, exit to the map, go to another "main level"* and use that key on the completely
+ ; different level. This is similar to how modern Legend of Zelda's dungeon keys to only be usable in the dungeon you found them.
  ;
- ; Here is how the memory works (example):
+ ;*Main level, as in all the levels accessible from the level entered from the map, in case if your dungeon spans multiple levels.
+ ;
+ ; Here is how the memory works (made-upexample):
  ; !Freeram_KeyCounter+$00: $0105, $01CB
  ; !Freeram_KeyCounter+$01: $0106, $01CA
  ; !Freeram_KeyCounter+$02: $0103, $01FD
  ; [...]
  ;
- ; So levels are given what key counter they should use, if you don't have keys matching to the locked doors, it won't open.
+ ; So levels are given what key counter they should use, if you don't have keys matching to the locked gates/doors, it won't open.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Settings
