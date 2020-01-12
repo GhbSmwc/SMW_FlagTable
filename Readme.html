@@ -121,7 +121,7 @@ good for debugging among other things.</li>
 						if you use tile <kbd>$0425</kbd>, it will use that tile when the flag is 0, otherwise it will use <kbd>$0<u>5</u>25</kbd>, which is the next map16 page keeping its low byte).</p>
 						
 						<p>Seems only useful if you don't want to use tile <kbd>$0025</kbd>. To keep things organized when using both settings (&ldquo;Always show objects&rdquo; checked
-						for some blocks and unchecked for others), I would recommend having all the default values in this table be set (<kbd>$11111111</kbd>) and always clear them when the
+						for some blocks and unchecked for others), I would recommend having all the default values in this table be set (<kbd>%11111111</kbd>) and always clear them when the
 						player triggers something, and have the intended &ldquo;inital&rdquo; block state on the second of the two map16 pages (<kbd>$0525</kbd> (inital) &rightarrow; <kbd>$0425</kbd> (block you place)).</p>
 					</li>
 				</ul>
