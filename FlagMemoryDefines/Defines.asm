@@ -136,8 +136,13 @@ endif
   ; $02 = each 8x8 tile byte have two bytes located next to each other;
   ;       Super status bar/Overworld border plus [TTTTTTTT YXPCCCTT, TTTTTTTT YXPCCCTT]...
  ;Status bar position:
-  !Settings_MBCM16_KeyCounterTileNumbPos = $7FA132
-  !Settings_MBCM16_KeyCounterTilePropPos = $7FA133
+  if !sa1 == 0
+   !Settings_MBCM16_KeyCounterTileNumbPos = $7FA132
+   !Settings_MBCM16_KeyCounterTilePropPos = $7FA133
+  else
+   !Settings_MBCM16_KeyCounterTileNumbPos = $404132
+   !Settings_MBCM16_KeyCounterTilePropPos = $404133
+  endif
  ;Static tiles:
   !Settings_MBCM16_KeyCounterBlankTileNumb = $FC
   !Settings_MBCM16_KeyCounterBlankTileProp = %00111000
