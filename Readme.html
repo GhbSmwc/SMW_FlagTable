@@ -77,10 +77,12 @@ good for debugging among other things.</li>
 
 <p>I've included a sample level (for level 105) demonstrating the key blocks, along with sample ASM tables (what flags the blocks should be using and what group-128 to use in level 105).</p>
 
-<p>If you are using this on SA-1, LM version 3.10 (September 24, 2019) and before it have a bug <a href="https://smwc.me/1522106">I've reported</a> that causes blocks to fail to spawn (or spawn when it shouldn't (never experienced this))
+<p>If you are using this on SA-1, LM version 3.10 (September 24, 2019) and before it, they have a bug <a href="https://smwc.me/1522106">I've reported</a> that causes blocks to fail to spawn (or spawn when it shouldn't (never experienced this))
 even when <kbd>$7FC060-$7FC06F</kbd> bits are set (or clear) on certain emulators. This is due to the fact that level load code is processed under SA-1, so WRAM (<kbd>$7Exxxx</kbd> and <kbd>$7Fxxxx</kbd>) access
 <abbr title="Certain emulators, like ZMZ would allow SA-1 to access WRAM as they &ldquo;read&rdquo; the instructions, which the real SNES (and accurate emulators, like BSNES+) doesn't do. ">will not work</abbr>. So
-don't use this ASM resource on an SA-1 hack using LMv3.10 (or any previous LM versions), as blocks may appear (or not) incorrectly can occur on certain emulators.</p>
+don't use this ASM resource on an SA-1 hack using LMv3.10 (or any previous LM versions), as blocks may appear (or not) incorrectly can occur on certain emulators.<br><br>
+
+EDIT: This is now fixed on version 3.11 (released on 2020/02/09)</p>
 <h2>Insertion</h2>
 <ol>
 	<li>
