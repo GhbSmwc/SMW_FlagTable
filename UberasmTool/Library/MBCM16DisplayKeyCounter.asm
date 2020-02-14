@@ -24,8 +24,10 @@ DisplayHud:
 	..Loop
 	LDA #!Settings_MBCM16_KeyCounterBlankTileNumb
 	STA !Settings_MBCM16_KeyCounterTileNumbPos,x
-	LDA #!Settings_MBCM16_KeyCounterBlankTileProp
-	STA !Settings_MBCM16_KeyCounterTilePropPos,x
+	if !EditTileProps != 0
+		LDA #!Settings_MBCM16_KeyCounterBlankTileProp
+		STA !Settings_MBCM16_KeyCounterTilePropPos,x
+	endif
 	DEX #!StatusBarFormat
 	BPL ..Loop
 	
@@ -34,10 +36,22 @@ DisplayHud:
 	BEQ .Done
 	.WriteTilePrefix
 	;Write <keysymbol>X<1 or 2 digits here>
-	LDA #!Settings_MBCM16_KeyCounterKeySymbolTileNumb : STA !Settings_MBCM16_KeyCounterTileNumbPos : LDA #!Settings_MBCM16_KeyCounterKeySymbolTileProp : STA !Settings_MBCM16_KeyCounterTilePropPos
-	LDA #!Settings_MBCM16_KeyCounterXSymbolTileNumb : STA !Settings_MBCM16_KeyCounterTileNumbPos+(!StatusBarFormat*$01) : LDA #!Settings_MBCM16_KeyCounterXSymbolTileProp : STA !Settings_MBCM16_KeyCounterTilePropPos+(!StatusBarFormat*$01)
+	LDA #!Settings_MBCM16_KeyCounterKeySymbolTileNumb : STA !Settings_MBCM16_KeyCounterTileNumbPos
+	if !EditTileProps != 0
+		LDA #!Settings_MBCM16_KeyCounterKeySymbolTileProp : STA !Settings_MBCM16_KeyCounterTilePropPos
+	endif
+	LDA #!Settings_MBCM16_KeyCounterXSymbolTileNumb : STA !Settings_MBCM16_KeyCounterTileNumbPos+(!StatusBarFormat*$01)
+	if !EditTileProps != 0
+		LDA #!Settings_MBCM16_KeyCounterXSymbolTileProp : STA !Settings_MBCM16_KeyCounterTilePropPos+(!StatusBarFormat*$01)
+	endif
 	
-	.WriteTiles
+	.WriteDigits
+	if !EditTileProps != 0
+		LDA.b #!Settings_MBCM16_KeyCounterDigitsTileProp
+		STA !Settings_MBCM16_KeyCounterTilePropPos+(!StatusBarFormat*$02)
+		STA !Settings_MBCM16_KeyCounterTilePropPos+(!StatusBarFormat*$03)
+	endif
+	
 	LDA !Freeram_KeyCounter,x
 	CMP.b #10
 	BCS ..TwoDigits
@@ -47,10 +61,10 @@ DisplayHud:
 	RTL
 	
 	..TwoDigits
-	JSL $00974C
-	STA !Settings_MBCM16_KeyCounterTileNumbPos+(!StatusBarFormat*$03)
-	TXA
-	STA !Settings_MBCM16_KeyCounterTileNumbPos+(!StatusBarFormat*$02)
+	JSL $00974C								;>HexDec.
+	STA !Settings_MBCM16_KeyCounterTileNumbPos+(!StatusBarFormat*$03)	;>Ones
+	TXA									;\Tens
+	STA !Settings_MBCM16_KeyCounterTileNumbPos+(!StatusBarFormat*$02)	;/
 	.Done
 	RTL
 	

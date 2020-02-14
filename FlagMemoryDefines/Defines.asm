@@ -103,7 +103,7 @@ endif
    ;^Generate smoke: 0 = no, 1 = yes.
   ;Tiles to turn into when unlocking gates. Note that if you want it to transform into a non tile-$25,
   ;you would checked the "Always show objects", and the tile numbers they transform into is their own
-  ;tile number plus $0100.
+  ;tile number plus (or minus if you decided to make it clear the CM16 flags) $0100.
    ;16x16 block:
     !Settings_MBCM16_LockedGate_16x16_TileToTurnTo = $0025
    ;16x32 block:
@@ -150,5 +150,5 @@ endif
   !Settings_MBCM16_KeyCounterKeySymbolTileProp = %00111100
   !Settings_MBCM16_KeyCounterXSymbolTileNumb = $26
   !Settings_MBCM16_KeyCounterXSymbolTileProp = %00111000
-  
+  !Settings_MBCM16_KeyCounterDigitsTileProp = %00111000
   
