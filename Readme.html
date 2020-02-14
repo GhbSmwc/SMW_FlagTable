@@ -114,8 +114,6 @@ EDIT: This is now fixed on version 3.11 (released on 2020/02/09)</p>
 				section and paste them accordingly. Remember that the order in table and defaults must match (the first <kbd>dl $xxxxxx : dw $yyyy</kbd> goes to the first group of bytes
 				in &ldquo;<kbd>defaults</kbd>&rdquo;, second on second, and so on). Remember that this is the default value they would be when you start a new game.</p>
 				
-				<p>This here is the default values that are going to be copied to <kbd>$7FC060-$7FC06F</kbd> upon entering a stage using this ASM resource when starting a new game.</p>
-				
 				<p>Keep in mind about LM's CM16:</p>
 				<ul>
 					<li>
@@ -166,7 +164,8 @@ init:
 </pre></td></tr></table>
 				What will happen is when the level loads, <kbd>$7FC060</kbd> is now written from <kbd>!Freeram_MemoryFlag+(&lt;Group_Number&gt;*$10)</kbd> to
 				<kbd>!Freeram_MemoryFlag+((&lt;Group_Number&gt;*$10)+$0F)</kbd>. Group number is found in <kbd>.OneHundredTwentyEightFlagGroupList</kbd>
-				in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd></p>
+				in <kbd>UberasmTool/Library/MBCM16WriteGroup128To7FC060.asm</kbd>. This also displays the key counter (or write blank tile <kbd>$FC</kbd> if you don't have any)
+				on the status bar/HUD.</p>
 			</li>
 			<li>
 				<sup><font color="yellow">[Return later]</font></sup>Specify what group-128 in <kbd>MBCM16WriteGroup128To7FC060.asm</kbd> should your level will use,
@@ -232,7 +231,7 @@ init:
 					the frequent editing of <kbd>SearchBlockFlagIndex.asm</kbd>. While finding the level numbers and what layer
 					they're on is easy, the block coordinate is displayed LM's status bar on the bottom-left corner of what block your mouse cursor is hovering:<br>
 					<img src="Readme_files/LM_BlockCoords.png"><br>
-					Note that on and after <kbd>Version 3.03 April 1, 2019</kbd>, the coordinates are displayed in hex numbers, before this were decimal.<br><br>
+					Note that on and after <kbd>Version 3.03 April 1, 2019</kbd>, the coordinates are displayed in hexadecimal numbers, before this, they were decimal.<br><br>
 					Use the X and Y coordinate for the table <kbd>?GetFlagNumberC800IndexStart:</kbd>. If involving multi-blocks,
 					such as gates that are more than 1 block wide and/or tall, you would take the top-leftmost block's coordinate of the multi-blocks group (shown in red squares):<br>
 					<a href="Readme_files/TopLeftAssignedBlock.png" target="_blank"><img src="Readme_files/TopLeftAssignedBlock.png" width="800"></a></p>
@@ -350,12 +349,12 @@ If you happen to have a byte that contains flags that shouldn't be reverted whil
 	;Clear bits
 	LDA $xxxxxx
 	AND.b #%00001111		;&gt;AND returns 0s for any matching bit pairs have at least one 0 on either, so AND is used to clear bits.
-	STA $xxxxxx
+	STA $xxxxxx			;&gt;$xxxxxx is now %0000xxxx.
 	
 	;Set bits
 	LDA $xxxxxx
 	AND.b #%11110000		;&gt;ORA returns 0s if both matching bit pairs are 0, therefore, ORA is used to set bits.
-	STA $xxxxxx
+	STA $xxxxxx			;&gt;$xxxxxx is now %1111xxxx.
 </pre></td></tr></table><br>
 
 </p>
