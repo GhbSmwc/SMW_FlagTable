@@ -5,6 +5,7 @@ JMP MarioBelow : JMP MarioAbove : JMP MarioSide
 JMP SpriteV : JMP SpriteH : JMP MarioCape : JMP MarioFireball
 JMP TopCorner : JMP BodyInside : JMP HeadInside
 ; JMP WallFeet : JMP WallBody ; when using db $37
+
 	incsrc "../../FlagMemoryDefines/Defines.asm"
 
 MarioBelow:
@@ -98,4 +99,4 @@ MarioCape:
 MarioFireball:
 	RTL
 
-print "A collectible key."
+print "A collectible key. Up to 99 can be carried for each different key."

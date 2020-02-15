@@ -95,6 +95,15 @@ endif
     !Settings_MBCM16_Key_SoundNum = $15
  
  ;Locked Gates:
+  ;Require the player to press on the D-Pad towards the block (press right
+  ;when standing on the left side of the block, down when on top, up when
+  ;under, and left when on right) to unlock. This is intended to prevent
+  ;the player from accidentally unlocking the gates when they don't want to.
+  ;This also enables the player to stand on top of key locked gates instead
+  ;of falling through them (however, you cannot crouch).
+   !Settings_MBCM16_RequireDPadPress = 1
+    ;^0 = unlock on touch, 1 = Require pressing towards the block to unlock.
+  
   ;What sound to play when unlocking a gate:
    !Settings_MBCM16_LockedGate_SoundRAM = $1DF9|!addr
    !Settings_MBCM16_LockedGate_SoundNum = $10

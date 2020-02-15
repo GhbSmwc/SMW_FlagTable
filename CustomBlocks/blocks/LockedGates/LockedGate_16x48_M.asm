@@ -6,14 +6,20 @@ JMP MarioBelow : JMP MarioAbove : JMP MarioSide
 JMP SpriteV : JMP SpriteH : JMP MarioCape : JMP MarioFireball
 JMP TopCorner : JMP BodyInside : JMP HeadInside
 ; JMP WallFeet : JMP WallBody ; when using db $37
+
 	incsrc "../../FlagMemoryDefines/Defines.asm"
 
-MarioSide:
-HeadInside:
-	%CheckIfPlayerPressAgainstSidesHoriz()
-	BCS +
-	RTL
-	+
+	if !Settings_MBCM16_RequireDPadPress != 0
+		MarioSide:
+		HeadInside:
+		%CheckIfPlayerPressAgainstSidesHoriz()
+		BCS +
+		RTL
+		+
+	else
+		MarioSide:
+		HeadInside:
+	endif
 MarioBelow:
 MarioAbove:
 TopCorner:
