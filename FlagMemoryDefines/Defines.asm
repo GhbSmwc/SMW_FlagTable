@@ -25,11 +25,12 @@ endif
 ;Freeram
 ;
 ;Note: [Must be saved] indicates that you must have these RAM not to
-;be reset during level transitions, they must retain their values.
+;be reset throughout the entire game other than starting a new file,
+;they must retain their values.
 ;
 ;You should also be very careful to prevent things that would get the
 ;player permanently stuck. Example is that locked doors/gate respawning
-;while the keys don't, rendering it possible to run out of keys while
+;while the keys don't, making it possible to run out of keys while
 ;progressing the stages.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Note: $ indicates hex, this include the !Defines being set to a value
@@ -71,13 +72,16 @@ endif
  ;
  ;*Main level, as in all the levels accessible from the level entered from the map, in case if your dungeon spans multiple levels.
  ;
- ; Here is how the memory works (made-upexample):
+ ; Here is how the memory works (made-up example):
  ; !Freeram_KeyCounter+$00: $0105, $01CB
  ; !Freeram_KeyCounter+$01: $0106, $01CA
  ; !Freeram_KeyCounter+$02: $0103, $01FD
  ; [...]
  ;
  ; So levels are given what key counter they should use, if you don't have keys matching to the locked gates/doors, it won't open.
+ ;
+ ; Note: Up to 99 keys can be picked up at any time, if you have 99 (or more, just in case), the player will simply not pick it up (handled
+ ; by the blocks).
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Settings

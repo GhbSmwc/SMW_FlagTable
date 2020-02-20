@@ -362,7 +362,11 @@ If you happen to have a byte that contains flags that shouldn't be reverted whil
 	AND.b #%11110000		;&gt;ORA returns 0s if both matching bit pairs are 0, therefore, ORA is used to set bits.
 	STA $xxxxxx			;&gt;$xxxxxx is now %1111xxxx.
 </pre></td></tr></table><br>
-
+And don't forget, if you are resetting the locked gates and locked doors, you MUST also reset the key counters too, otherwise the locked gates and doors will respawn and the key counter is retained with them also respawning in the level:
+<table><tr><td><pre>	LDA #$00
+	STA !Freeram_KeyCounter
+	STA !Freeram_KeyCounter+1
+	;[...]</pre></td></tr></table>
 </p>
 	</li>
 </ul>
